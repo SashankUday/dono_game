@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Higher or Lower — University Rankings | Dono</title>
+<meta name="description" content="Guess which university is ranked higher. A game by Dono.">
+
+<!-- ══════════════════════════════════════════════════════════════
+     DONO BRAND SETTINGS — everything you are likely to edit lives
+     in this block and the :root CSS variables just below it.
+     ══════════════════════════════════════════════════════════════ -->
+<script>
+  const DONO_CONFIG = {
+    brandName: "Dono",
+    websiteUrl: "https://joindono.com",
+    tagline: "Helping university communities fund the things that matter.",
+    endOfGameCta: "Enjoyed the game? See how Dono helps university communities fund the things that matter.",
+    ctaButtonLabel: "Discover Dono",
+    // Set to a logo image URL to replace the text wordmark, or leave "" for text.
+    logoUrl: "",
+    datasetLabel: "QS World University Rankings 2027",
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════ DONO PALETTE & TYPE — edit these variables ═══════════ */
+:root {
+  --dono-brand:        #4D3DF7;  /* primary brand colour            */
+  --dono-brand-dark:   #372BB8;  /* hover / pressed                 */
+  --dono-brand-soft:   #EAE7FE;  /* tinted backgrounds              */
+  --dono-accent:       #FFC53D;  /* streaks & highlights            */
+  --dono-ink:          #17162B;  /* main text                       */
+  --dono-ink-soft:     #5B5A72;  /* secondary text                  */
+  --dono-paper:        #F7F6FD;  /* page background                 */
+  --dono-card:         #FFFFFF;  /* card background                 */
+  --dono-correct:      #0E8F5B;  /* success                         */
+  --dono-correct-soft: #E2F5EC;
+  --dono-wrong:        #D64550;  /* error                           */
+  --dono-wrong-soft:   #FCE9EB;
+  --dono-line:         #E4E2F2;  /* hairlines                       */
+
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius: 18px;
+  --shadow: 0 10px 30px rgba(23, 22, 43, 0.08);
+}
+/* ══════════════════ end of editable brand block ═══════════════════ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--dono-paper);
+  color: var(--dono-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+button { font: inherit; cursor: pointer; }
+a { color: var(--dono-brand); }
+
+:focus-visible {
+  outline: 3px solid var(--dono-brand);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.site-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px clamp(16px, 4vw, 40px);
+  border-bottom: 1px solid var(--dono-line);
+  background: var(--dono-card);
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 26px; letter-spacing: -0.02em;
+  color: var(--dono-brand); text-decoration: none;
+  display: inline-flex; align-items: baseline; gap: 2px;
+}
+.wordmark .dot { color: var(--dono-accent); }
+.wordmark img { height: 30px; display: block; }
+.header-note {
+  font-size: 13px; color: var(--dono-ink-soft);
+}
+.header-note a { text-decoration: none; font-weight: 600; }
+.header-note a:hover { text-decoration: underline; }
+
+/* ── Layout ─────────────────────────────────────────────── */
+main {
+  flex: 1; width: 100%; max-width: 900px; margin: 0 auto;
+  padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 40px) 32px;
+  display: flex; flex-direction: column;
+}
+.screen { animation: screenIn 260ms ease both; }
+@keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Landing ────────────────────────────────────────────── */
+.landing { text-align: center; margin: auto 0; padding: 24px 0 48px; }
+.landing h1 {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(38px, 7vw, 64px); line-height: 1.05; letter-spacing: -0.02em;
+}
+.landing h1 .hi { color: var(--dono-brand); }
+.landing h1 .lo { color: var(--dono-ink-soft); }
+.landing .lede {
+  max-width: 46ch; margin: 18px auto 8px; color: var(--dono-ink-soft); font-size: 17px;
+}
+.landing .dataset { font-size: 13px; color: var(--dono-ink-soft); margin-bottom: 34px; }
+.mode-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.mode-btn {
+  flex: 1 1 240px; max-width: 300px; text-align: left;
+  background: var(--dono-card); border: 2px solid var(--dono-line);
+  border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow);
+  transition: transform 140ms ease, border-color 140ms ease;
+}
+.mode-btn:hover { transform: translateY(-3px); border-color: var(--dono-brand); }
+.mode-btn .mode-name {
+  font-family: var(--font-display); font-weight: 700; font-size: 21px; display: block;
+}
+.mode-btn .mode-desc { font-size: 14px; color: var(--dono-ink-soft); display: block; margin-top: 4px; }
+.mode-btn.sudden .mode-name { color: var(--dono-wrong); }
+.mode-btn.normal .mode-name { color: var(--dono-brand); }
+.best-line { margin-top: 22px; font-size: 14px; color: var(--dono-ink-soft); }
+.best-line strong { color: var(--dono-ink); }
+
+/* ── Status bar ─────────────────────────────────────────── */
+.status-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 18px;
+}
+.mode-chip {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--dono-brand-soft); color: var(--dono-brand-dark);
+  padding: 5px 12px; border-radius: 999px;
+}
+.stats { display: flex; gap: 18px; align-items: baseline; }
+.stat { font-size: 14px; color: var(--dono-ink-soft); }
+.stat b { font-family: var(--font-display); font-size: 20px; color: var(--dono-ink); margin-left: 6px; }
+.stat.streak-hot b { color: var(--dono-brand); }
+.streak-flame { color: var(--dono-accent); }
+.end-run-btn {
+  background: none; border: 1px solid var(--dono-line); border-radius: 999px;
+  padding: 6px 14px; font-size: 13px; color: var(--dono-ink-soft);
+}
+.end-run-btn:hover { border-color: var(--dono-ink-soft); color: var(--dono-ink); }
+
+/* ── Duel cards ─────────────────────────────────────────── */
+.duel { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; }
+.uni-card {
+  background: var(--dono-card); border: 1px solid var(--dono-line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: clamp(18px, 3vw, 30px); text-align: center;
+  display: flex; flex-direction: column; justify-content: center; min-height: 210px;
+}
+.uni-name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(19px, 2.6vw, 25px); line-height: 1.2; text-wrap: balance;
+}
+.uni-country { font-size: 13px; color: var(--dono-ink-soft); margin-top: 6px; }
+.uni-rank {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(40px, 6vw, 58px); letter-spacing: -0.02em;
+  color: var(--dono-brand); margin-top: 12px; line-height: 1;
+}
+.uni-rank .of { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--dono-ink-soft); margin-top: 6px; }
+.uni-rank.hidden-rank { color: var(--dono-ink-soft); }
+.uni-rank.revealing { animation: rankPop 320ms cubic-bezier(.2,.9,.3,1.4) both; }
+@keyframes rankPop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+
+.vs-spine { display: flex; align-items: center; justify-content: center; }
+.vs-badge {
+  font-family: var(--font-display); font-weight: 800; font-size: 15px;
+  background: var(--dono-ink); color: var(--dono-paper);
+  border-radius: 999px; width: 44px; height: 44px;
+  display: grid; place-items: center;
+}
+
+/* ── Guess buttons ──────────────────────────────────────── */
+.guess-row { display: flex; gap: 14px; margin-top: 18px; }
+.guess-btn {
+  flex: 1; padding: 18px 10px; border-radius: var(--radius); border: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 20px;
+  background: var(--dono-brand); color: #fff;
+  transition: background 140ms ease, transform 140ms ease;
+}
+.guess-btn:hover:enabled { background: var(--dono-brand-dark); transform: translateY(-2px); }
+.guess-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.guess-btn .key-hint { display: block; font-family: var(--font-body); font-weight: 500; font-size: 12px; opacity: .8; margin-top: 3px; }
+.guess-btn.lower { background: var(--dono-ink); }
+.guess-btn.lower:hover:enabled { background: #000; }
+
+/* ── Result panel ───────────────────────────────────────── */
+.result-panel {
+  margin-top: 18px; border-radius: var(--radius); padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  border: 1.5px solid;
+}
+.result-panel.correct { background: var(--dono-correct-soft); border-color: var(--dono-correct); }
+.result-panel.wrong { background: var(--dono-wrong-soft); border-color: var(--dono-wrong); }
+.result-text { font-weight: 600; }
+.result-text .verdict { font-family: var(--font-display); font-weight: 800; margin-right: 8px; }
+.result-panel.correct .verdict { color: var(--dono-correct); }
+.result-panel.wrong .verdict { color: var(--dono-wrong); }
+.result-sub { display: block; font-weight: 400; font-size: 14px; color: var(--dono-ink-soft); margin-top: 2px; }
+.result-actions { display: flex; align-items: center; gap: 12px; }
+.points-chip {
+  font-family: var(--font-display); font-weight: 800; font-size: 17px;
+  padding: 6px 12px; border-radius: 999px; background: var(--dono-card);
+}
+.points-chip.gain { color: var(--dono-correct); }
+.points-chip.loss { color: var(--dono-wrong); }
+.next-btn {
+  border: none; border-radius: 999px; padding: 12px 26px;
+  background: var(--dono-ink); color: #fff; font-weight: 600; font-size: 15px;
+}
+.next-btn:hover { background: #000; }
+
+/* ── Persistent in-game CTA / footer ────────────────────── */
+.dono-footer {
+  margin-top: auto; padding: 18px clamp(16px, 4vw, 40px);
+  text-align: center; font-size: 13px; color: var(--dono-ink-soft);
+  border-top: 1px solid var(--dono-line);
+}
+.dono-footer a { font-weight: 600; text-decoration: none; }
+.dono-footer a:hover { text-decoration: underline; }
+
+/* ── Game over ──────────────────────────────────────────── */
+.over { text-align: center; margin: auto 0; padding: 20px 0 40px; }
+.over .over-kicker {
+  font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--dono-ink-soft);
+}
+.over h2 {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(30px, 5vw, 44px); margin: 8px 0 26px; letter-spacing: -0.02em;
+}
+.over-stats {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;
+}
+.over-stat {
+  background: var(--dono-card); border: 1px solid var(--dono-line);
+  border-radius: var(--radius); padding: 16px 22px; min-width: 128px; box-shadow: var(--shadow);
+}
+.over-stat b { display: block; font-family: var(--font-display); font-size: 34px; font-weight: 800; color: var(--dono-brand); }
+.over-stat span { font-size: 13px; color: var(--dono-ink-soft); }
+.over-stat.record { background: var(--dono-accent); border-color: var(--dono-accent); }
+.over-stat.record b, .over-stat.record span { color: var(--dono-ink); }
+.over-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 34px; }
+.btn-primary, .btn-secondary, .btn-cta {
+  border-radius: 999px; padding: 13px 26px; font-weight: 600; font-size: 15px; border: none;
+  text-decoration: none; display: inline-block;
+}
+.btn-primary { background: var(--dono-brand); color: #fff; }
+.btn-primary:hover { background: var(--dono-brand-dark); }
+.btn-secondary { background: var(--dono-card); color: var(--dono-ink); border: 1.5px solid var(--dono-line); }
+.btn-secondary:hover { border-color: var(--dono-ink-soft); }
+.cta-block {
+  background: var(--dono-brand-soft); border-radius: var(--radius);
+  padding: 24px; max-width: 560px; margin: 0 auto;
+}
+.cta-block p { font-size: 15px; margin-bottom: 14px; color: var(--dono-brand-dark); font-weight: 500; }
+.btn-cta { background: var(--dono-brand); color: #fff; font-family: var(--font-display); font-weight: 700; }
+.btn-cta:hover { background: var(--dono-brand-dark); }
+
+/* ── Error state ────────────────────────────────────────── */
+.error-box {
+  margin: auto; max-width: 480px; text-align: center;
+  background: var(--dono-wrong-soft); border: 1.5px solid var(--dono-wrong);
+  border-radius: var(--radius); padding: 28px;
+}
+.error-box h2 { font-family: var(--font-display); margin-bottom: 8px; }
+.error-box p { color: var(--dono-ink-soft); font-size: 15px; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .duel { grid-template-columns: 1fr; }
+  .vs-spine { padding: 0; }
+  .uni-card { min-height: 150px; }
+  .stats { gap: 12px; }
+  .header-note { display: none; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" id="wordmark" href="#" target="_blank" rel="noopener">Dono<span class="dot">.</span></a>
+  <span class="header-note">Made by Dono — <a id="header-cta" href="#" target="_blank" rel="noopener">joindono.com</a></span>
+</header>
+
+<main id="app" aria-live="off"></main>
+<div class="sr-only" role="status" aria-live="polite" id="announcer"></div>
+
+<footer class="dono-footer">
+  Made by <a id="footer-cta" href="#" target="_blank" rel="noopener">Dono</a> —
+  <span id="footer-tagline"></span>
+</footer>
+
+<!-- ══════════════════ RANKINGS DATA (CSV) ═══════════════════
+     Swap this block for a newer CSV whenever the rankings update.
+     Required columns (any order, flexible names): rank, name;
+     optional: country/territory. -->
+<script type="text/csv" id="dono-rankings">
+Rank,Name,Country/Territory
+1,Massachusetts Institute of Technology (MIT),United States of America
+2,Imperial College London,United Kingdom
+2,Stanford University,United States of America
+4,University of Oxford,United Kingdom
+5,Harvard University,United States of America
+6,University of Cambridge,United Kingdom
+7,California Institute of Technology (Caltech),United States of America
+8,ETH Zurich,Switzerland
+8,UCL,United Kingdom
+10,National University of Singapore (NUS),Singapore
+11,The University of Hong Kong,"Hong Kong SAR, China"
+12,"Nanyang Technological University, Singapore (NTU Singapore)",Singapore
+13,Peking University,China (Mainland)
+14,Tsinghua University,China (Mainland)
+15,University of Pennsylvania,United States of America
+16,Cornell University,United States of America
+16,Yale University,United States of America
+18,The Chinese University of Hong Kong (CUHK),"Hong Kong SAR, China"
+19,The University of New South Wales (UNSW Sydney),Australia
+20,Johns Hopkins University,United States of America
+20,"University of California, Berkeley (UCB)",United States of America
+22,EPFL – École polytechnique fédérale de Lausanne,Switzerland
+22,The University of Melbourne,Australia
+24,University of Chicago,United States of America
+25,Technical University of Munich,Germany
+26,Fudan University,China (Mainland)
+27,Princeton University,United States of America
+28,The University of Sydney,Australia
+29,Australian National University (ANU),Australia
+30,McGill University,Canada
+31,Monash University,Australia
+32,University of Toronto,Canada
+33,The Hong Kong University of Science and Technology,"Hong Kong SAR, China"
+34,Université PSL,France
+35,The University of Edinburgh,United Kingdom
+36,Shanghai Jiao Tong University,China (Mainland)
+37,King's College London,United Kingdom
+38,Seoul National University,Republic of Korea
+39,The University of Tokyo,Japan
+40,The University of Manchester,United Kingdom
+40,The University of Queensland,Australia
+42,Yonsei University,Republic of Korea
+43,Columbia University,United States of America
+43,Institut Polytechnique de Paris,France
+45,Northwestern University,United States of America
+45,University of British Columbia,Canada
+47,Zhejiang University,China (Mainland)
+48,Delft University of Technology,Netherlands
+49,"University of California, Los Angeles (UCLA)",United States of America
+50,The Hong Kong Polytechnic University,"Hong Kong SAR, China"
+51,University of Michigan-Ann Arbor,United States of America
+52,City University of Hong Kong (CityUHK),"Hong Kong SAR, China"
+52,Korea University,Republic of Korea
+54,National Taiwan University (NTU),Taiwan
+55,Carnegie Mellon University,United States of America
+56,Universiti Malaya (UM),Malaysia
+57,University of Bristol,United Kingdom
+58,New York University (NYU),United States of America
+59,KU Leuven,Belgium
+60,University of Amsterdam,Netherlands
+61,Ludwig-Maximilians-Universität München,Germany
+62,The London School of Economics and Political Science (LSE),United Kingdom
+63,KFUPM,Saudi Arabia
+64,Kyoto University,Japan
+65,KAIST,Republic of Korea
+66,Brown University,United States of America
+67,The University of Auckland,New Zealand
+68,The University of Warwick,United Kingdom
+68,University of Birmingham,United Kingdom
+70,Duke University,United States of America
+71,Lund University,Sweden
+72,University of Texas at Austin,United States of America
+73,Sorbonne University,France
+74,University of Illinois Urbana-Champaign,United States of America
+75,"Trinity College Dublin, The University of Dublin",Ireland
+76,Université Paris-Saclay,France
+77,The University of Western Australia,Australia
+77,University of Leeds,United Kingdom
+79,Adelaide University,Australia
+80,University of Glasgow,United Kingdom
+81,"University of California, San Diego (UCSD)",United States of America
+82,KTH Royal Institute of Technology,Sweden
+82,The University of Sheffield,United Kingdom
+84,Universidad de Buenos Aires (UBA),Argentina
+85,Durham University,United Kingdom
+86,Universität Heidelberg,Germany
+87,Politecnico di Milano,Italy
+87,University of Technology Sydney,Australia
+87,Uppsala University,Sweden
+90,Nanjing University,China (Mainland)
+90,University of Copenhagen,Denmark
+92,Pennsylvania State University,United States of America
+92,University of Washington,United States of America
+94,Boston University,United States of America
+95,The University of Osaka,Japan
+96,University of Alberta,Canada
+97,Institute of Science Tokyo,Japan
+97,University of Nottingham,United Kingdom
+98,Freie Universitaet Berlin,Germany
+98,University of Zurich,Switzerland
+100,Purdue University,United States of America
+100,University College Dublin,Ireland
+102,Tohoku University,Japan
+103,Queen Mary University of London,United Kingdom
+104,RWTH Aachen University,Germany
+105,Technical University of Denmark,Denmark
+106,Pohang University of Science And Technology (POSTECH),Republic of Korea
+107,King Saud University,Saudi Arabia
+108,Sungkyunkwan University (SKKU),Republic of Korea
+109,Qatar University,Qatar
+110,"KIT, Karlsruhe Institute of Technology",Germany
+111,Sapienza University of Rome,Italy
+111,University of Southampton,United Kingdom
+113,University of Waterloo,Canada
+113,Utrecht University,Netherlands
+115,Lomonosov Moscow State University,Russian Federation
+115,University of St Andrews,United Kingdom
+118,Indian Institute of Technology Delhi (IITD),India
+119,Leiden University,Netherlands
+119,Pontificia Universidad Católica de Chile (UC),Chile
+119,RMIT University,Australia
+122,Rice University,United States of America
+123,Alma Mater Studiorum - Università di Bologna,Italy
+123,University of Helsinki,Finland
+125,University of Bath,United Kingdom
+126,Aalto University,Finland
+126,"Macquarie University (Sydney, Australia)",Australia
+128,Aarhus University,Denmark
+128,Universiti Sains Malaysia (USM),Malaysia
+130,Universiti Kebangsaan Malaysia (UKM),Malaysia
+131,University of Oslo,Norway
+131,University of Wisconsin-Madison,United States of America
+133,Universidade de São Paulo,Brazil
+134,Indian Institute of Technology Bombay (IITB),India
+134,University of Science and Technology of China,China (Mainland)
+136,University of Exeter,United Kingdom
+137,"University of California, Davis",United States of America
+138,Universiti Putra Malaysia (UPM),Malaysia
+139,University of Liverpool,United Kingdom
+140,Humboldt-Universität zu Berlin,Germany
+140,University of Vienna,Austria
+142,Georgia Institute of Technology,United States of America
+142,National Tsing Hua University - NTHU,Taiwan
+142,Western University,Canada
+145,Universidad Nacional Autónoma de México  (UNAM),Mexico
+146,Tongji University,China (Mainland)
+147,Khalifa University,United Arab Emirates
+148,Erasmus University Rotterdam,Netherlands
+149,Newcastle University,United Kingdom
+150,Ghent University,Belgium
+150,University of Basel,Switzerland
+152,Eindhoven University of Technology,Netherlands
+153,University of Southern California,United States of America
+154,Wageningen University & Research,Netherlands
+155,Hanyang University,Republic of Korea
+156,Nagoya University,Japan
+157,University of Groningen,Netherlands
+158,Technische Universität Berlin (TU Berlin),Germany
+158,Universiti Teknologi Malaysia,Malaysia
+158,University of North Carolina at Chapel Hill,United States of America
+158,University of York,United Kingdom
+162,Université de Montréal,Canada
+162,Washington University in St. Louis,United States of America
+164,Lancaster University,United Kingdom
+165,Universitat de Barcelona,Spain
+165,Wuhan University,China (Mainland)
+167,Stockholm University,Sweden
+168,University of Geneva,Switzerland
+169,Texas A&M University,United States of America
+170,Indian Institute of Technology Madras (IITM),India
+171,Kyushu University,Japan
+172,Arizona State University,United States of America
+173,"University of California, Santa Barbara (UCSB)",United States of America
+174,Chalmers University of Technology,Sweden
+174,McMaster University,Canada
+174,Queen's University Belfast,United Kingdom
+177,Al-Farabi Kazakh National University,Kazakhstan
+177,National Yang Ming Chiao Tung University (NYCU Taiwan),Taiwan
+179,Cardiff University,United Kingdom
+179,Hokkaido University,Japan
+179,Queen's University at Kingston,Canada
+182,Michigan State University,United States of America
+183,Emory University,United States of America
+184,University of Cape Town,South Africa
+185,Technische Universität Dresden,Germany
+185,Universidad de Chile,Chile
+185,Vrije Universiteit Amsterdam,Netherlands
+188,Tecnológico de Monterrey,Mexico
+189,Curtin University,Australia
+190,Harbin Institute of Technology,China (Mainland)
+191,National Cheng Kung University (NCKU),Taiwan
+191,Technische Universität Wien,Austria
+191,Universitas Indonesia,Indonesia
+191,University of Bern,Switzerland
+195,University of Wollongong,Australia
+196,Université catholique de Louvain (UCLouvain),Belgium
+196,University of Reading,United Kingdom
+198,University of Otago,New Zealand
+199,Complutense University of Madrid,Spain
+200,King Abdulaziz University (KAU),Saudi Arabia
+201,The Ohio State University,United States of America
+201,Waseda University,Japan
+203,Loughborough University,United Kingdom
+204,Università di Padova,Italy
+205,Indian Institute of Technology Kharagpur (IIT-KGP),India
+206,Gadjah Mada University,Indonesia
+206,Politecnico di Torino,Italy
+208,Tel Aviv University,Israel
+209,Rheinische Friedrich-Wilhelms-Universität Bonn,Germany
+209,Universität Hamburg,Germany
+211,Universitat Autònoma de Barcelona,Spain
+212,Chulalongkorn University,Thailand
+213,Hamad Bin Khalifa University (HBKU),Qatar
+213,Keio University,Japan
+215,Massey University,New Zealand
+216,Hong Kong Baptist University,"Hong Kong SAR, China"
+217,United Arab Emirates University,United Arab Emirates
+218,Friedrich-Alexander-Universität Erlangen-Nürnberg,Germany
+218,The Hebrew University of Jerusalem,Israel
+220,University College Cork,Ireland
+221,Indian Institute of Science (IISc) Bangalore,India
+221,Indian Institute of Technology Kanpur (IITK),India
+223,American University of Beirut (AUB),Lebanon
+223,University of Twente,Netherlands
+225,University of Gothenburg,Sweden
+226,Universidad Autónoma de Madrid,Spain
+227,Deakin University,Australia
+228,University of Florida,United States of America
+228,University of Ottawa,Canada
+230,Eberhard Karls Universität Tübingen,Germany
+230,Griffith University,Australia
+230,University of Strathclyde,United Kingdom
+233,Universidad de los Andes,Colombia
+233,University of Lausanne,Switzerland
+235,École Normale Supérieure de Lyon,France
+235,Tianjin University,China (Mainland)
+237,Beijing Normal University,China (Mainland)
+237,University of Lisbon,Portugal
+239,Central European University,Austria
+240,Queensland University of Technology (QUT),Australia
+241,La Trobe University,Australia
+241,Victoria University of Wellington,New Zealand
+243,Beijing Institute of Technology,China (Mainland)
+244,"The University of Newcastle, Australia (UON)",Australia
+245,Albert-Ludwigs-Universitaet Freiburg,Germany
+246,Université Paris 1 Panthéon-Sorbonne,France
+246,University of Surrey,United Kingdom
+248,Universite libre de Bruxelles,Belgium
+249,University of Calgary,Canada
+250,Technical University of Darmstadt,Germany
+251,University of Rochester,United States of America
+252,"University of California, Irvine",United States of America
+252,"University of Maryland, College Park",United States of America
+254,Maastricht University,Netherlands
+255,University of Minnesota (System),United States of America
+255,University of Porto,Portugal
+257,University of Canterbury | Te Whare Wānanga o Waitaha,New Zealand
+258,American University of Sharjah,United Arab Emirates
+258,Sun Yat-sen University,China (Mainland)
+260,University of Massachusetts Amherst,United States of America
+261,Universiti Teknologi PETRONAS (UTP),Malaysia
+261,University of Göttingen,Germany
+263,Universitat Pompeu Fabra (Barcelona),Spain
+264,Norwegian University of Science And Technology,Norway
+265,Vanderbilt University,United States of America
+266,Singapore University of Technology and Design,Singapore
+267,University of Macau,"Macao SAR, China"
+268,University of Virginia,United States of America
+269,University of Cologne,Germany
+270,Dartmouth College,United States of America
+270,University of Milan,Italy
+272,Taylor's University,Malaysia
+273,Charles University,Czechia
+273,University of Sussex,United Kingdom
+275,University of Galway,Ireland
+276,Universitas Airlangga,Indonesia
+277,Universidade Estadual de Campinas (Unicamp),Brazil
+277,University of Antwerp,Belgium
+279,Istanbul Technical University,Türkiye
+279,University of Navarra,Spain
+279,University of Pittsburgh,United States of America
+282,UCSI University,Malaysia
+283,Radboud University,Netherlands
+283,University of Bergen,Norway
+283,University of Sharjah,United Arab Emirates
+283,University of Southern Denmark (SDU),Denmark
+287,Institut Teknologi Bandung (ITB),Indonesia
+288,University of Aberdeen,United Kingdom
+289,Georgetown University,United States of America
+289,University of Warsaw,Poland
+291,Swinburne University of Technology,Australia
+292,University of Johannesburg,South Africa
+293,Universidad Nacional de Colombia,Colombia
+293,University of Waikato,New Zealand
+295,Vrije Universiteit Brussel (VUB),Belgium
+296,Stellenbosch University,South Africa
+296,Xi’an Jiaotong University,China (Mainland)
+298,Dalhousie University,Canada
+299,Ulsan National Institute of Science and Technology (UNIST),Republic of Korea
+300,Sichuan University,China (Mainland)
+300,University of Notre Dame,United States of America
+302,University of Witwatersrand,South Africa
+303,Université Paris Cité,France
+303,Xiamen University,China (Mainland)
+305,Middle East Technical University,Türkiye
+306,Sultan Qaboos University,Oman
+307,Huazhong University of Science and Technology,China (Mainland)
+308,Linköping University,Sweden
+309,Kyung Hee University,Republic of Korea
+309,Shandong University,China (Mainland)
+311,University of Tasmania,Australia
+312,Simon Fraser University,Canada
+313,The University of Arizona,United States of America
+314,Rutgers University–New Brunswick,United States of America
+314,Universidad Carlos III de Madrid (UC3M),Spain
+314,University of Leicester,United Kingdom
+317,Southern University of Science and Technology (SUSTech),China (Mainland)
+318,Bauman Moscow State Technical University,Russian Federation
+318,Universität Stuttgart,Germany
+320,North Carolina State University,United States of America
+320,University of Colorado Boulder,United States of America
+322,Swansea University,United Kingdom
+322,University of Delhi,India
+322,York University,Canada
+325,Heriot-Watt University,United Kingdom
+326,Case Western Reserve University,United States of America
+326,University of Jordan,Jordan
+326,University of Pretoria,South Africa
+329,Aalborg University,Denmark
+329,Jagiellonian University,Poland
+329,Koç University,Türkiye
+329,Nankai University,China (Mainland)
+333,Universität Innsbruck,Austria
+334,Technion - Israel Institute of Technology,Israel
+335,Indian Institute of Technology Roorkee (IITR),India
+335,Southeast University,China (Mainland)
+337,Universidade Nova de Lisboa,Portugal
+338,L.N. Gumilyov Eurasian National University (ENU),Kazakhstan
+338,Tufts University,United States of America
+338,University of Miami,United States of America
+341,University of Pisa,Italy
+342,South China University of Technology,China (Mainland)
+342,University of Coimbra,Portugal
+342,"University of Rome ""Tor Vergata""",Italy
+345,Boğaziçi University,Türkiye
+345,Mahidol University,Thailand
+345,Universiti Brunei Darussalam (UBD),Brunei Darussalam
+348,Abu Dhabi University,United Arab Emirates
+349,Beihang University (former BUAA),China (Mainland)
+349,Indian Institute of Technology Guwahati (IITG),India
+351,Satbayev University,Kazakhstan
+351,University of Tsukuba,Japan
+353,Brunel University of London,United Kingdom
+354,"Birkbeck, University of London",United Kingdom
+354,Sciences Po,France
+354,Sunway University,Malaysia
+357,Pontificia Universidad Catolica del Peru (PUCP),Peru
+357,Sabanci University,Türkiye
+359,RUDN University,Russian Federation
+360,Indiana University Bloomington,United States of America
+360,University of Chinese Academy of Sciences (UCAS),China (Mainland)
+360,University of Oulu,Finland
+361,"City St George’s, University of London",United Kingdom
+363,Cairo University,Egypt
+364,Universidad Politécnica de Madrid (UPM),Spain
+364,Université de Liège,Belgium
+366,Virginia Polytechnic Institute and State University,United States of America
+367,Universidade Federal do Rio de Janeiro,Brazil
+367,University of Tartu,Estonia
+367,University of Tehran,Iran (Islamic Republic of)
+370,University of Illinois Chicago (UIC),United States of America
+370,University of Münster,Germany
+370,University of Victoria (UVic),Canada
+370,Western Sydney University,Australia
+374,Flinders University,Australia
+376,Goethe-University Frankfurt am Main,Germany
+376,University of Luxembourg,Luxembourg
+378,National Technical University of Athens,Greece
+379,Gwangju Institute of Science and Technology (GIST),Republic of Korea
+379,National Taiwan University of Science and Technology (Taiwan Tech),Taiwan
+381,George Washington University,United States of America
+381,Quaid-i-Azam University,Pakistan
+381,University of East Anglia (UEA),United Kingdom
+384,National University of Sciences & Technology (NUST) Islamabad,Pakistan
+385,Daegu Gyeongbuk Institute of Science and Technology (DGIST),Republic of Korea
+385,Northeastern University,United States of America
+387,Université Grenoble Alpes,France
+388,Università Cattolica del Sacro Cuore,Italy
+388,University of Limerick,Ireland
+390,LUT University,Finland
+390,Saint Petersburg State University,Russian Federation
+390,Sharif University of Technology,Iran (Islamic Republic of)
+390,The American University in Cairo,Egypt
+394,East China Normal University,China (Mainland)
+395,Pontificia Universidad Javeriana,Colombia
+395,Università degli Studi di Pavia,Italy
+397,Ajman University,United Arab Emirates
+398,Macau University of Science and Technology,"Macao SAR, China"
+398,Sejong University,Republic of Korea
+398,"University of California, Riverside",United States of America
+398,University of Turku,Finland
+401,University of Naples - Federico II,Italy
+402,National and Kapodistrian University of Athens,Greece
+402,Ruhr-Universität Bochum,Germany
+402,University of the Philippines,Philippines
+405,University of Turin,Italy
+406,INTI International University,Malaysia
+406,The Education University of Hong Kong,"Hong Kong SAR, China"
+408,Dublin City University,Ireland
+409,Graz University of Technology,Austria
+409,University of Florence,Italy
+411,Oxford Brookes University,United Kingdom
+411,Singapore Management University,Singapore
+411,University of Saskatchewan,Canada
+411,University of Southern Queensland,Australia
+415,University of Kent,United Kingdom
+416,Aston University,United Kingdom
+416,Shenzhen University,China (Mainland)
+416,University at Buffalo SUNY,United States of America
+419,IPB University (aka Bogor Agricultural University),Indonesia
+419,Lincoln University,New Zealand
+421,Prince Mohammad Bin Fahd university,Saudi Arabia
+422,Murdoch University,Australia
+423,HSE University,Russian Federation
+423,National Taiwan Normal University (NTNU),Taiwan
+425,Northwestern Polytechnical University,China (Mainland)
+425,Universität Konstanz,Germany
+425,Universität Mannheim,Germany
+425,University of Aveiro,Portugal
+429,Tilburg University,Netherlands
+430,Julius-Maximilians-Universität Würzburg,Germany
+431,Auckland University of Technology (AUT),New Zealand
+432,Chung-Ang University (CAU),Republic of Korea
+432,Czech Technical University in Prague,Czechia
+434,Universitat Politècnica de Catalunya · BarcelonaTech (UPC),Spain
+434,Universitat Politecnica de Valencia,Spain
+436,Central Queensland University (CQUniversity Australia),Australia
+436,Tampere University,Finland
+438,"Essex, University of",United Kingdom
+438,James Cook University,Australia
+438,National Sun Yat-sen University (NSYSU),Taiwan
+438,Umea University,Sweden
+438,University of Trento,Italy
+443,Aix-Marseille University,France
+443,Shanghai University,China (Mainland)
+443,University of Science and Technology Beijing,China (Mainland)
+446,IE University,Spain
+447,University of Dundee,United Kingdom
+447,University of Granada,Spain
+449,Jordan University of Science & Technology,Jordan
+449,Pusan National University,Republic of Korea
+449,Universitat de Valencia,Spain
+452,Central South University,China (Mainland)
+452,Shoolini University of Biotechnology and Management Sciences,India
+454,Bilkent University,Türkiye
+454,Masaryk University,Czechia
+456,Université de Strasbourg,France
+456,USI - Università della Svizzera italiana,Switzerland
+458,Johannes Kepler University Linz,Austria
+458,SOAS University of London,United Kingdom
+458,Tashkent Institute of Irrigation and Agricultural Mechanization Engineers - National Research University (TIIAME-NRU),Uzbekistan
+458,"University of California, Santa Cruz",United States of America
+458,University of Connecticut,United States of America
+463,Dalian University of Technology,China (Mainland)
+463,Universidad de Costa Rica,Costa Rica
+465,Chongqing University,China (Mainland)
+465,Università Vita-Salute San Raffaele,Italy
+465,Vilnius University,Lithuania
+468,Kazan (Volga region) Federal University,Russian Federation
+468,"Stony Brook University, State University of New York",United States of America
+470,Anna University,India
+470,Leibniz University Hannover,Germany
+472,University of Bayreuth,Germany
+473,Université de Montpellier,France
+474,Imam Abdulrahman Bin Faisal University (IAU),Saudi Arabia
+474,Universidad Nacional de La Plata (UNLP),Argentina
+474,Universitat Ramon Llull,Spain
+477,China Agricultural University,China (Mainland)
+477,Hunan University,China (Mainland)
+477,Lebanese American University,Lebanon
+477,University of Canberra,Australia
+481,Hiroshima University,Japan
+481,Kyungpook National University,Republic of Korea
+483,Amirkabir University of Technology,Iran (Islamic Republic of)
+483,Jinan University (China),China (Mainland)
+485,"Royal Holloway, University of London",United Kingdom
+485,Universidad de Sevilla,Spain
+485,University of Bordeaux,France
+488,Ewha Womans University,Republic of Korea
+488,Jilin University,China (Mainland)
+488,Novosibirsk State University,Russian Federation
+488,Prince Sultan University,Saudi Arabia
+488,University of Electronic Science and Technology of China,China (Mainland)
+494,National Taipei University of Technology,Taiwan
+494,Sogang University,Republic of Korea
+496,Universitas Padjadjaran (UNPAD),Indonesia
+497,Concordia University,Canada
+497,Institut Teknologi Sepuluh Nopember (ITS Surabaya),Indonesia
+497,University of Bradford,United Kingdom
+500,Johannes Gutenberg Universität Mainz,Germany
+500,Universität Potsdam,Germany
+502,Aristotle University of Thessaloniki,Greece
+502,University of Genoa,Italy
+504,Duy Tan University,Viet Nam
+504,Iran University of Science and Technology,Iran (Islamic Republic of)
+504,Kobe University,Japan
+504,Moscow Institute of Physics and Technology (MIPT / Moscow Phystech),Russian Federation
+504,Ural Federal University - UrFU,Russian Federation
+504,Warsaw University of Technology,Poland
+510,Indian Institute of Technology BHU Varanasi (IIT BHU Varanasi),India
+510,Tomsk State University,Russian Federation
+510,Washington State University,United States of America
+513,UNESP,Brazil
+514,King Khalid University,Saudi Arabia
+515,China Medical University,Taiwan
+515,Conservatoire National des Arts et Métiers (CNAM),France
+515,University of Kansas,United States of America
+518,Bond University,Australia
+518,Universiti Tenaga Nasional (UNITEN),Malaysia
+520,Dongguk University,Republic of Korea
+521,Justus-Liebig-University Giessen,Germany
+521,Renmin (People's) University of China,China (Mainland)
+521,University of Huddersfield,United Kingdom
+521,University of Jyväskylä,Finland
+525,University of Cyprus (UCY),Cyprus
+526,Chandigarh University,India
+526,Université Laval,Canada
+528,Asia Pacific University of Technology and Innovation (APU) Malaysia,Malaysia
+528,Northumbria University at Newcastle,United Kingdom
+530,Pontificia Universidad Católica Argentina,Argentina
+530,Universidad Austral,Argentina
+530,University of Ljubljana,Slovenia
+533,Belarusian State University,Belarus
+533,Ben-Gurion University of The Negev,Israel
+533,University of Utah,United States of America
+536,The University of Georgia,United States of America
+537,Saint Joseph University of Beirut (USJ),Lebanon
+537,University of Iceland,Iceland
+537,University of Windsor,Canada
+540,Colorado State University,United States of America
+540,Iowa State University,United States of America
+540,Universität  Leipzig,Germany
+540,Universiti Utara Malaysia (UUM),Malaysia
+544,University of Milano-Bicocca,Italy
+545,Edith Cowan University,Australia
+546,Florida State University,United States of America
+546,Indian Institute of Technology Indore,India
+546,University of Guelph,Canada
+549,Boston College,United States of America
+549,Universiti Teknologi MARA - UiTM,Malaysia
+551,"Ain Shams University in Cairo (ASU, Cairo)",Egypt
+551,Charles Darwin University,Australia
+551,Universidad de Santiago de Chile (USACH),Chile
+551,University of Houston,United States of America
+555,Chiang Mai University,Thailand
+555,Inha University,Republic of Korea
+555,Jawaharlal Nehru University,India
+555,Thammasat University,Thailand
+559,Al Ain University,United Arab Emirates
+560,Pakistan Institute of Engineering and Applied Sciences (PIEAS),Pakistan
+560,University of Manitoba,Canada
+560,University of Salamanca,Spain
+560,University of Stirling,United Kingdom
+560,Zhejiang University of Technology,China (Mainland)
+565,Baku State University,Azerbaijan
+565,Université Paul Sabatier Toulouse III,France
+567,Bangor University,United Kingdom
+567,King Faisal University,Saudi Arabia
+567,Universität Jena,Germany
+570,Ajou University,Republic of Korea
+570,Hacettepe University,Türkiye
+572,Paris Lodron University of Salzburg,Austria
+572,University of Minho,Portugal
+572,University of Siena,Italy
+575,"Birla Institute of Technology and Science, Pilani",India
+575,Colorado School of Mines,United States of America
+575,Hitotsubashi University,Japan
+575,Ulm University,Germany
+575,University of Delaware,United States of America
+575,University of Hull,United Kingdom
+581,Ateneo de Manila University,Philippines
+581,Coventry University,United Kingdom
+581,"Lingnan University, Hong Kong","Hong Kong SAR, China"
+581,Rensselaer Polytechnic Institute,United States of America
+581,Universität Bremen,Germany
+581,University of Brescia,Italy
+581,Zhengzhou University,China (Mainland)
+588,Brno University of Technology,Czechia
+588,Indian Institute of Technology Hyderabad (IITH),India
+588,Saarland University,Germany
+588,Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA),Malaysia
+588,University of the Punjab,Pakistan
+588,Zayed University,United Arab Emirates
+594,Technische Universität Bergakademie Freiberg,Germany
+595,Eötvös Loránd University,Hungary
+595,Ulster University,United Kingdom
+597,Tulane University,United States of America
+597,University of Iowa,United States of America
+597,"Vellore Institute of Technology (VIT), Vellore, India",India
+600,Ca' Foscari University of Venice,Italy
+600,"China University of Petroleum, Beijing",China (Mainland)
+600,Federal University of Minas Gerais (UFMG),Brazil
+600,Manchester Metropolitan University,United Kingdom
+600,Tallinn University of Technology (TalTech),Estonia
+600,University of Debrecen,Hungary
+600,University of Dhaka,Bangladesh
+600,University of Kwazulu-Natal,South Africa
+608,American University of Ras Al Khaimah,United Arab Emirates
+608,Free University of Bozen-Bolzano,Italy
+608,Lahore University of Management Sciences (LUMS),Pakistan
+608,Management and Science University,Malaysia
+608,Taipei Medical University (TMU),Taiwan
+613,National Chengchi University,Taiwan
+613,Université Claude Bernard Lyon 1,France
+613,Universiti Teknologi Brunei,Brunei Darussalam
+616,American University of the Middle East,Kuwait
+616,Canadian University Dubai,United Arab Emirates
+616,Universitas Brawijaya,Indonesia
+619,Peter the Great St. Petersburg Polytechnic University,Russian Federation
+620,American University in Dubai,United Arab Emirates
+620,Christian-Albrechts-University zu Kiel,Germany
+620,HUFS - Hankuk (Korea) University of Foreign Studies,Republic of Korea
+620,Illinois Institute of Technology,United States of America
+620,Isfahan University of Technology,Iran (Islamic Republic of)
+620,Pontifícia Universidade Católica do Rio de Janeiro,Brazil
+626,Lebanese University,Lebanon
+626,National Research Nuclear University MEPhI (Moscow Engineering Physics Institute),Russian Federation
+626,University of Eastern Finland,Finland
+629,Istanbul University,Türkiye
+629,Universidade de Santiago de Compostela,Spain
+629,"University of Agriculture, Faisalabad",Pakistan
+629,University of Tromsø The Arctic University of Norway,Norway
+633,University of Szeged,Hungary
+634,Abai Kazakh National Pedagogical University (Abai University),Kazakhstan
+634,Azerbaijan State University of Economics (UNEC),Azerbaijan
+634,National Chung Hsing University,Taiwan
+634,Southern Cross University,Australia
+634,Yildiz Technical University,Türkiye
+639,COMSATS University Islamabad,Pakistan
+639,Hasselt University,Belgium
+639,MGIMO University,Russian Federation
+639,Nottingham Trent University,United Kingdom
+643,Al-Ahliyya Amman University,Jordan
+643,Comillas Pontifical University,Spain
+643,University of Hawaiʻi at Mānoa,United States of America
+646,American University,United States of America
+646,Institut National Polytechnique de Toulouse,France
+646,Otto-von-Guericke-Universität Magdeburg,Germany
+649,Asia University Taiwan,Taiwan
+649,Beijing University of Chemical Technology,China (Mainland)
+649,University of Crete,Greece
+652,The Catholic University of Korea (CUK),Republic of Korea
+652,Universidad de la República (Udelar),Uruguay
+652,"University of Chemistry and Technology, Prague",Czechia
+655,Applied Science University - Bahrain,Bahrain
+655,Symbiosis International (Deemed University),India
+655,Universidad Adolfo Ibáñez,Chile
+655,Université de Tunis El Manar,Tunisia
+659,China University of Mining and Technology,China (Mainland)
+659,Florida International University,United States of America
+659,National Central University,Taiwan
+662,Chang Gung University,Taiwan
+662,Comenius University Bratislava,Slovakia
+662,Diponegoro University,Indonesia
+662,Universidad de Concepción,Chile
+662,Universita' Politecnica delle Marche,Italy
+662,University of Portsmouth,United Kingdom
+668,École Centrale de Lyon,France
+669,Toronto Metropolitan University (formerly Ryerson University),Canada
+670,Abo Akademi University,Finland
+670,Beirut Arab University,Lebanon
+670,East China University of Science and Technology,China (Mainland)
+670,Lehigh University,United States of America
+670,University of Fribourg,Switzerland
+675,Nanjing University of Science and Technology,China (Mainland)
+675,Stevens Institute of Technology,United States of America
+677,China University of Geosciences,China (Mainland)
+677,City University of New York,United States of America
+677,Jeonbuk National University,Republic of Korea
+677,Prince Sattam Bin Abdulaziz University,Saudi Arabia
+677,University of New Brunswick,Canada
+677,University of the Basque Country,Spain
+683,Konkuk University,Republic of Korea
+683,Ritsumeikan University,Japan
+683,University of Klagenfurt,Austria
+686,Jamia Millia Islamia,India
+686,"Kingston University, London",United Kingdom
+686,Université de Lille,France
+686,University of Tabriz,Iran (Islamic Republic of)
+686,University of Texas at Dallas,United States of America
+691,Eastern Mediterranean University,Northern Cyprus
+691,"Government College University, Faisalabad",Pakistan
+691,International Islamic University Malaysia (IIUM),Malaysia
+691,TU Dortmund University,Germany
+691,University of Plymouth,United Kingdom
+696,Karl-Franzens-Universitaet Graz,Austria
+696,Kaunas University of Technology,Lithuania
+696,Universität Regensburg,Germany
+696,University of Malta,Malta
+696,Victoria University,Australia
+</script>
+
+<script>
+/* ============================================================
+   DONO HIGHER OR LOWER — GAME LOGIC (no DOM access)
+   Parsing, validation, deck management and scoring live here.
+   ============================================================ */
+
+/** Parse raw CSV text into an array of row arrays (handles quoted fields). */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ',') {
+      row.push(field); field = '';
+    } else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(field); field = '';
+      rows.push(row); row = [];
+    } else field += c;
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+/**
+ * Inspect column headings and map the most likely name / rank / country
+ * columns rather than assuming fixed positions. Returns cleaned records:
+ * [{ id, name, rank, country }]
+ */
+function loadUniversities(csvText) {
+  const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ''));
+  if (!rows.length) return [];
+
+  // Find the most plausible header row within the first few rows.
+  const score = (r) => r.reduce((s, cell) => {
+    const c = cell.trim().toLowerCase();
+    if (/(^|\b)(rank|position)\b/.test(c)) s += 2;
+    if (/\b(name|institution|university)\b/.test(c)) s += 2;
+    if (/\b(country|territory|location)\b/.test(c)) s += 1;
+    return s;
+  }, 0);
+  let headerIdx = 0, best = -1;
+  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+    const s = score(rows[i]);
+    if (s > best) { best = s; headerIdx = i; }
+  }
+  const header = rows[headerIdx].map(h => h.trim().toLowerCase());
+
+  const findCol = (tests) => {
+    for (const test of tests) {
+      const idx = header.findIndex(test);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+  const rankCol = findCol([
+    h => h === 'rank' || h === '2027' || h === 'ranking',
+    h => /\brank\b/.test(h) && !/\bprevious\b|\bprev\b|\bar\b|\ber\b|\bfsr\b|\bcpf\b|\bifr\b|\bisr\b|\birn\b|\beo\b|\bsus\b/.test(h),
+  ]);
+  const nameCol = findCol([
+    h => h === 'name' || h === 'institution' || h === 'university',
+    h => /institution|university|\bname\b/.test(h),
+  ]);
+  const countryCol = findCol([
+    h => /country|territory/.test(h),
+    h => /location/.test(h),
+  ]);
+  if (rankCol === -1 || nameCol === -1) return [];
+
+  const seen = new Set();
+  const out = [];
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const r = rows[i];
+    const name = (r[nameCol] || '').trim();
+    const rankRaw = (r[rankCol] || '').trim().replace(/=+$/, '');
+    // Only exact numerical ranks are eligible — banded ranks such as
+    // "701-710" or "1401+" cannot support honest comparisons.
+    if (!name || !/^\d+$/.test(rankRaw)) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue; // remove exact duplicates
+    seen.add(key);
+    out.push({
+      id: out.length,
+      name,
+      rank: parseInt(rankRaw, 10),
+      country: countryCol !== -1 ? (r[countryCol] || '').trim() : '',
+    });
+  }
+  return out;
+}
+
+/** 1 -> "1st", 2 -> "2nd", 21 -> "21st", 12 -> "12th" */
+function ordinal(n) {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) return n + 'th';
+  switch (n % 10) {
+    case 1: return n + 'st';
+    case 2: return n + 'nd';
+    case 3: return n + 'rd';
+    default: return n + 'th';
+  }
+}
+
+/** Points earned by a correct answer given the streak AFTER this answer. */
+function pointsForStreak(streak) {
+  if (streak >= 10) return 5;
+  if (streak >= 5) return 3;
+  if (streak >= 3) return 2;
+  return 1;
+}
+
+/**
+ * Game state machine. Pure: UI drives it via guess()/next()/endRun().
+ * mode: 'sudden' | 'normal'
+ */
+function createGame(universities, mode, rng) {
+  const random = rng || Math.random;
+  if (!universities || universities.length < 3) {
+    throw new Error('Need at least three eligible universities to play.');
+  }
+
+  const state = {
+    mode,
+    score: 0,
+    streak: 0,
+    bestStreak: 0,
+    correct: 0,
+    incorrect: 0,
+    current: null,   // known university (rank shown)
+    challenger: null, // hidden university
+    phase: 'guessing', // 'guessing' | 'revealed' | 'over'
+    lastResult: null, // { wasCorrect, relation, points }
+    usedIds: new Set(),
+  };
+
+  function pickRandom(pool) {
+    return pool[Math.floor(random() * pool.length)];
+  }
+
+  /** Draw an unused university whose rank differs from `exclude`'s. */
+  function draw(exclude) {
+    let pool = universities.filter(u =>
+      !state.usedIds.has(u.id) &&
+      (!exclude || (u.id !== exclude.id && u.rank !== exclude.rank))
+    );
+    if (!pool.length) {
+      // Pool exhausted: reset it (keeping the on-screen university out)
+      // and allow universities to appear again.
+      state.usedIds = new Set(exclude ? [exclude.id] : []);
+      pool = universities.filter(u =>
+        !exclude || (u.id !== exclude.id && u.rank !== exclude.rank)
+      );
+    }
+    const chosen = pickRandom(pool);
+    state.usedIds.add(chosen.id);
+    return chosen;
+  }
+
+  state.current = draw(null);
+  state.challenger = draw(state.current);
+
+  return {
+    get state() { return state; },
+
+    /** guessHigher = true means "challenger is ranked higher (better)". */
+    guess(guessHigher) {
+      if (state.phase !== 'guessing') return null;
+      const a = state.current, b = state.challenger;
+      // Lower numerical position = higher-ranked university.
+      const challengerIsHigher = b.rank < a.rank;
+      const wasCorrect = guessHigher === challengerIsHigher;
+      let points = 0;
+
+      if (wasCorrect) {
+        state.correct++;
+        state.streak++;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        points = state.mode === 'normal' ? pointsForStreak(state.streak) : 1;
+        state.score += points;
+      } else {
+        state.incorrect++;
+        state.streak = 0;
+        if (state.mode === 'normal') {
+          points = -1;
+          state.score = Math.max(0, state.score - 1);
+        }
+      }
+
+      state.lastResult = { wasCorrect, challengerIsHigher, points };
+      state.phase = (state.mode === 'sudden' && !wasCorrect) ? 'over' : 'revealed';
+      return state.lastResult;
+    },
+
+    /** Challenger becomes the known university; a new challenger is drawn. */
+    next() {
+      if (state.phase !== 'revealed') return;
+      state.current = state.challenger;
+      state.challenger = draw(state.current);
+      state.lastResult = null;
+      state.phase = 'guessing';
+    },
+
+    endRun() { state.phase = 'over'; },
+  };
+}
+
+</script>
+
+<script>
+/* ============================================================
+   UI LAYER — rendering, input and persistence.
+   All rules live in the logic module above; this file only
+   draws state and forwards events.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  const BEST_KEY = 'dono_hol_best_sudden';
+  const app = document.getElementById('app');
+  const announcer = document.getElementById('announcer');
+
+  /* Branding hookup */
+  const wm = document.getElementById('wordmark');
+  wm.href = DONO_CONFIG.websiteUrl;
+  if (DONO_CONFIG.logoUrl) {
+    wm.innerHTML = '<img src="' + DONO_CONFIG.logoUrl + '" alt="' + DONO_CONFIG.brandName + '">';
+  }
+  document.getElementById('header-cta').href = DONO_CONFIG.websiteUrl;
+  document.getElementById('footer-cta').href = DONO_CONFIG.websiteUrl;
+  document.getElementById('footer-tagline').textContent = DONO_CONFIG.tagline;
+
+  /* Data: parsed once at load, never reparsed between rounds */
+  const csvNode = document.getElementById('dono-rankings');
+  const universities = csvNode ? loadUniversities(csvNode.textContent.trim()) : [];
+
+  let game = null;
+  let busy = false; // guards against double-clicks while revealing
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  function readBest() {
+    try { return parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) { return 0; }
+  }
+  function writeBest(v) {
+    try { localStorage.setItem(BEST_KEY, String(v)); } catch (e) { /* private mode etc. */ }
+  }
+
+  function announce(text) { announcer.textContent = text; }
+
+  /* ── Screens ─────────────────────────────────────────── */
+
+  function renderError(msg) {
+    app.innerHTML =
+      '<div class="screen error-box"><h2>The game can\u2019t start</h2><p>' + esc(msg) +
+      '</p></div>';
+  }
+
+  function renderLanding() {
+    busy = false;
+    const best = readBest();
+    app.innerHTML =
+      '<div class="screen landing">' +
+        '<h1><span class="hi">Higher</span> or <span class="lo">Lower</span>?</h1>' +
+        '<p class="lede">One university\u2019s world ranking is shown. Guess whether the next one sits higher or lower in the table \u2014 and keep your streak alive.</p>' +
+        '<p class="dataset">' + esc(DONO_CONFIG.datasetLabel) + ' \u00b7 ' + universities.length + ' universities</p>' +
+        '<div class="mode-buttons">' +
+          '<button class="mode-btn sudden" id="mode-sudden">' +
+            '<span class="mode-name">Sudden Death</span>' +
+            '<span class="mode-desc">One point per correct answer. One mistake ends the run.</span>' +
+          '</button>' +
+          '<button class="mode-btn normal" id="mode-normal">' +
+            '<span class="mode-name">Normal Mode</span>' +
+            '<span class="mode-desc">Keep playing through mistakes. Streaks earn bonus points.</span>' +
+          '</button>' +
+        '</div>' +
+        (best ? '<p class="best-line">Your best Sudden Death score on this device: <strong>' + best + '</strong></p>' : '') +
+      '</div>';
+    document.getElementById('mode-sudden').addEventListener('click', () => startGame('sudden'));
+    document.getElementById('mode-normal').addEventListener('click', () => startGame('normal'));
+    document.getElementById('mode-sudden').focus();
+  }
+
+  function startGame(mode) {
+    try {
+      game = createGame(universities, mode);
+    } catch (e) {
+      renderError(e.message);
+      return;
+    }
+    renderRound();
+    announce('New ' + (mode === 'sudden' ? 'Sudden Death' : 'Normal Mode') + ' game started.');
+  }
+
+  function statusBar() {
+    const s = game.state;
+    const modeLabel = s.mode === 'sudden' ? 'Sudden Death' : 'Normal Mode';
+    const streakHot = s.streak >= 3 ? ' streak-hot' : '';
+    return '<div class="status-bar">' +
+      '<span class="mode-chip">' + modeLabel + '</span>' +
+      '<div class="stats">' +
+        '<span class="stat">Score<b>' + s.score + '</b></span>' +
+        (s.mode === 'normal'
+          ? '<span class="stat' + streakHot + '">Streak<b>' + (s.streak >= 3 ? '<span class="streak-flame" aria-hidden="true">\u2605 </span>' : '') + s.streak + '</b></span>'
+          : '<span class="stat">Best streak<b>' + s.bestStreak + '</b></span>') +
+      '</div>' +
+      (s.mode === 'normal' ? '<button class="end-run-btn" id="end-run">End run</button>' : '<span></span>') +
+    '</div>';
+  }
+
+  function card(u, opts) {
+    const rankHTML = opts.showRank
+      ? '<div class="uni-rank' + (opts.reveal ? ' revealing' : '') + '">' + ordinal(u.rank) +
+        '<span class="of">in the world</span></div>'
+      : '<div class="uni-rank hidden-rank" aria-label="ranking hidden">?<span class="of">higher or lower?</span></div>';
+    return '<div class="uni-card">' +
+      '<div class="uni-name">' + esc(u.name) + '</div>' +
+      (u.country ? '<div class="uni-country">' + esc(u.country) + '</div>' : '') +
+      rankHTML +
+    '</div>';
+  }
+
+  function renderRound() {
+    busy = false;
+    const s = game.state;
+    app.innerHTML =
+      '<div class="screen">' + statusBar() +
+        '<div class="duel">' +
+          card(s.current, { showRank: true }) +
+          '<div class="vs-spine"><span class="vs-badge" aria-hidden="true">vs</span></div>' +
+          card(s.challenger, { showRank: false }) +
+        '</div>' +
+        '<div class="guess-row" role="group" aria-label="Your guess">' +
+          '<button class="guess-btn" id="guess-higher">Higher<span class="key-hint">ranked above \u00b7 press H</span></button>' +
+          '<button class="guess-btn lower" id="guess-lower">Lower<span class="key-hint">ranked below \u00b7 press L</span></button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('guess-higher').addEventListener('click', () => onGuess(true));
+    document.getElementById('guess-lower').addEventListener('click', () => onGuess(false));
+    if (s.mode === 'normal') document.getElementById('end-run').addEventListener('click', onEndRun);
+    announce('Is ' + s.challenger.name + ' ranked higher or lower than ' + s.current.name +
+      ', which is ' + ordinal(s.current.rank) + ' in the world?');
+  }
+
+  function onGuess(guessHigher) {
+    if (busy || !game || game.state.phase !== 'guessing') return;
+    busy = true;
+    const res = game.guess(guessHigher);
+    const s = game.state;
+    if (s.mode === 'sudden' && s.phase === 'over') {
+      renderReveal(res, true);
+      return;
+    }
+    renderReveal(res, false);
+  }
+
+  function relationText(res) {
+    const s = game.state;
+    const a = s.current, b = s.challenger;
+    return b.name + ' is ranked ' + (res.challengerIsHigher ? 'higher' : 'lower') +
+      ' than ' + a.name + ' (' + ordinal(b.rank) + ' vs ' + ordinal(a.rank) + ').';
+  }
+
+  function renderReveal(res, gameEnding) {
+    const s = game.state;
+    const pointsChip = s.mode === 'normal' || res.wasCorrect
+      ? '<span class="points-chip ' + (res.points >= 0 ? 'gain' : 'loss') + '">' +
+        (res.points >= 0 ? '+' + res.points : res.points) + '</span>'
+      : '';
+    app.innerHTML =
+      '<div class="screen">' + statusBar() +
+        '<div class="duel">' +
+          card(s.current, { showRank: true }) +
+          '<div class="vs-spine"><span class="vs-badge" aria-hidden="true">vs</span></div>' +
+          card(s.challenger, { showRank: true, reveal: true }) +
+        '</div>' +
+        '<div class="result-panel ' + (res.wasCorrect ? 'correct' : 'wrong') + '">' +
+          '<span class="result-text">' +
+            '<span class="verdict">' + (res.wasCorrect ? '\u2713 Correct' : '\u2715 Incorrect') + '</span>' +
+            '<span class="result-sub">' + esc(relationText(res)) + '</span>' +
+          '</span>' +
+          '<span class="result-actions">' + pointsChip +
+            '<button class="next-btn" id="next-btn">' +
+              (gameEnding ? 'See results' : 'Next round') + '<span class="sr-only"> (press Enter)</span></button>' +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('next-btn').addEventListener('click', gameEnding ? renderGameOver : onNext);
+    document.getElementById('next-btn').focus();
+    announce((res.wasCorrect ? 'Correct. ' : 'Incorrect. ') + relationText(res) +
+      (res.points ? ' ' + (res.points > 0 ? 'Plus ' + res.points : 'Minus 1') + ' point' + (Math.abs(res.points) === 1 ? '' : 's') + '.' : '') +
+      ' Score ' + s.score + '.');
+  }
+
+  function onNext() {
+    if (!game || game.state.phase !== 'revealed') return;
+    game.next();
+    renderRound();
+  }
+
+  function onEndRun() {
+    if (!game) return;
+    game.endRun();
+    renderGameOver();
+  }
+
+  function renderGameOver() {
+    busy = false;
+    const s = game.state;
+    const sudden = s.mode === 'sudden';
+    let recordLine = '';
+    if (sudden) {
+      const best = readBest();
+      if (s.score > best) { writeBest(s.score); recordLine = '<div class="over-stat record"><b>' + s.score + '</b><span>new best on this device</span></div>'; }
+      else recordLine = '<div class="over-stat"><b>' + Math.max(best, s.score) + '</b><span>best on this device</span></div>';
+    }
+    app.innerHTML =
+      '<div class="screen over">' +
+        '<p class="over-kicker">' + (sudden ? 'Sudden Death \u00b7 run over' : 'Normal Mode \u00b7 results') + '</p>' +
+        '<h2>' + (sudden ? 'Good run.' : 'Final score.') + '</h2>' +
+        '<div class="over-stats">' +
+          '<div class="over-stat"><b>' + s.score + '</b><span>final score</span></div>' +
+          '<div class="over-stat"><b>' + s.bestStreak + '</b><span>longest streak</span></div>' +
+          (!sudden ? '<div class="over-stat"><b>' + s.correct + '</b><span>correct</span></div>' +
+                     '<div class="over-stat"><b>' + s.incorrect + '</b><span>incorrect</span></div>' : recordLine) +
+        '</div>' +
+        '<div class="over-actions">' +
+          '<button class="btn-primary" id="again-btn">Play again</button>' +
+          '<button class="btn-secondary" id="mode-btn">Change mode</button>' +
+        '</div>' +
+        '<div class="cta-block">' +
+          '<p>' + esc(DONO_CONFIG.endOfGameCta) + '</p>' +
+          '<a class="btn-cta" href="' + esc(DONO_CONFIG.websiteUrl) + '" target="_blank" rel="noopener">' +
+            esc(DONO_CONFIG.ctaButtonLabel) + '</a>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('again-btn').addEventListener('click', () => startGame(s.mode));
+    document.getElementById('mode-btn').addEventListener('click', renderLanding);
+    document.getElementById('again-btn').focus();
+    announce('Game over. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
+  }
+
+  /* ── Keyboard play ───────────────────────────────────── */
+  document.addEventListener('keydown', (e) => {
+    if (!game) return;
+    if (e.target && /^(input|textarea|select)$/i.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase();
+    if (game.state.phase === 'guessing') {
+      if (k === 'h' || k === 'arrowup') { e.preventDefault(); onGuess(true); }
+      if (k === 'l' || k === 'arrowdown') { e.preventDefault(); onGuess(false); }
+    } else if (game.state.phase === 'revealed' && (k === 'enter' || k === ' ')) {
+      // Enter/Space already activate the focused Next button natively;
+      // this catches the case where focus has moved elsewhere.
+      if (document.activeElement !== document.getElementById('next-btn')) {
+        e.preventDefault(); onNext();
+      }
+    }
+  });
+
+  /* ── Boot ────────────────────────────────────────────── */
+  if (!universities || universities.length < 3) {
+    renderError('The rankings data could not be loaded, or it contains fewer than three universities with valid names and numerical ranks. Please check the CSV block in this file.');
+  } else {
+    renderLanding();
+  }
+})();
+</script>
+</body>
+</html>
