@@ -16,7 +16,7 @@
     websiteUrl: "https://dono-game.vercel.app",
     tagline: "",
     endOfGameCta: "Enjoyed the game? Share with your friends and see if they can get a better score!",
-    ctaButtonLabel: "Discover Dono",
+    ctaButtonLabel: "Share the game",
     // Set to a logo image URL to replace the text wordmark, or leave "" for text.
     logoUrl: "",
     datasetLabel: "QS World University Rankings 2027",
@@ -163,6 +163,7 @@ main {
   background: var(--dono-card); border: 1px solid var(--dono-line);
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
 }
+.setup-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .setup-summary { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-align: left; }
 .setup-best { display: block; font-family: var(--font-body); font-size: 13px; color: var(--dono-ink-soft); margin-top: 3px; }
 .start-btn { font-family: var(--font-display); font-size: 18px; padding-inline: 34px; }
@@ -187,7 +188,23 @@ main {
 .stat { font-size: 14px; color: var(--dono-ink-soft); }
 .stat b { font-family: var(--font-display); font-size: 20px; color: var(--dono-ink); margin-left: 6px; }
 .stat.streak-hot b { color: var(--dono-brand); }
-.streak-flame { color: var(--dono-accent); }
+.streak-stat b { display: inline-flex; align-items: center; gap: 5px; }
+.streak-flame {
+  color: var(--dono-accent); display: inline-block; font-size: 19px;
+  filter: drop-shadow(0 2px 4px rgba(255, 197, 61, .45));
+}
+.streak-hot .streak-flame { animation: flamePulse 700ms ease-in-out infinite alternate; }
+.multiplier-pill {
+  display: inline-flex; align-items: center; gap: 5px; background: var(--dono-accent);
+  color: var(--dono-ink); border-radius: 999px; padding: 4px 9px;
+  font-family: var(--font-display); font-weight: 800; font-size: 14px;
+}
+.streak-add {
+  color: var(--dono-correct); font-family: var(--font-display); font-weight: 800;
+  animation: streakAdd 700ms ease both;
+}
+@keyframes flamePulse { from { transform: translateY(1px) scale(.96); } to { transform: translateY(-1px) scale(1.08); } }
+@keyframes streakAdd { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .life-icons { display: inline-flex; gap: 4px; vertical-align: middle; }
 .life-dot {
   width: 12px; height: 12px; border-radius: 999px; border: 2px solid var(--dono-wrong);
@@ -247,6 +264,7 @@ main {
 .guess-btn:hover:enabled { background: var(--dono-brand-dark); transform: translateY(-2px); }
 .guess-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .guess-btn .key-hint { display: block; font-family: var(--font-body); font-weight: 500; font-size: 12px; opacity: .8; margin-top: 3px; }
+.key-symbol { font-size: 15px; margin-left: 4px; }
 .guess-btn.lower { background: var(--dono-ink); }
 .guess-btn.lower:hover:enabled { background: #000; }
 
@@ -348,6 +366,8 @@ main {
   .setup-grid { grid-template-columns: 1fr; }
   .setup-option { min-height: 0; }
   .start-panel { flex-direction: column; align-items: stretch; }
+  .setup-actions { justify-content: stretch; }
+  .setup-actions .btn-primary, .setup-actions .btn-secondary { flex: 1; }
   .setup-summary { text-align: center; }
   .guess-row { position: sticky; bottom: 10px; z-index: 2; }
 }
@@ -362,14 +382,12 @@ main {
 
 <header class="site-header">
   <a class="wordmark" id="wordmark" href="#" target="_blank" rel="noopener">Dono<span class="dot">.</span></a>
-  <span class="header-note">Made by Dono — <a id="header-cta" href="#" target="_blank" rel="noopener">joindono.com</a></span>
 </header>
 
 <main id="app" aria-live="off"></main>
 <div class="sr-only" role="status" aria-live="polite" id="announcer"></div>
 
 <footer class="dono-footer">
-  Made by <a id="footer-cta" href="#" target="_blank" rel="noopener">Dono</a> —
   <span id="footer-tagline"></span>
 </footer>
 
@@ -1902,7 +1920,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   const app = document.getElementById('app');
   const announcer = document.getElementById('announcer');
   const storagePrefix = 'dono_hol_';
-  const revealDelayMs = 650;
+  const revealDelayMs = 1000;
 
   const DEFAULT_SETTINGS = {
     format: core.FORMAT.LIVES,
@@ -1939,9 +1957,9 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   };
 
   const DIFFICULTY_COPY = {
-    easy: 'Rank gap 151 to 400',
-    normal: 'Rank gap 50 to 150',
-    hard: 'Rank gap 1 to 49',
+    easy: 'More forgiving comparisons',
+    normal: 'Balanced comparisons',
+    hard: 'Tough close calls',
   };
 
   const wm = document.getElementById('wordmark');
@@ -2046,6 +2064,17 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     return best ? '<span class="setup-best">Best: <b>' + best + '</b></span>' : '';
   }
 
+  function randomiseSettings() {
+    const formats = [core.FORMAT.SUDDEN, core.FORMAT.LIVES, core.FORMAT.TIMED, core.FORMAT.DAILY];
+    const pools = [core.POOL.GLOBAL, core.POOL.TOP200, core.POOL.TOP50, core.POOL.UK, core.POOL.US];
+    const difficulties = [core.DIFFICULTY.EASY, core.DIFFICULTY.NORMAL, core.DIFFICULTY.HARD];
+    settings.format = formats[Math.floor(Math.random() * formats.length)];
+    settings.pool = settings.format === core.FORMAT.DAILY ? core.POOL.GLOBAL : pools[Math.floor(Math.random() * pools.length)];
+    settings.difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+    renderLanding();
+    announce('Random settings selected.');
+  }
+
   function dailyOptions(extra) {
     return Object.assign({
       dateKey: core.getDailyDateKey(),
@@ -2110,8 +2139,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
       '<div class="screen landing setup-screen">' +
         '<h1><span class="hi">Higher</span> or <span class="lo">Lower</span>?</h1>' +
         '<p class="lede">Guess which university is closer to #1 in the world rankings.</p>' +
-        '<p class="dataset">' + esc(DONO_CONFIG.datasetLabel) + ' · ' + universities.length + ' exact-ranked universities' +
-          (dataset.excludedBanded ? ' · ' + dataset.excludedBanded + ' banded entries excluded' : '') + '</p>' +
+        '<p class="dataset">Pick a format, choose your universities, then start guessing.</p>' +
         '<section class="setup-section" aria-labelledby="format-heading"><h2 id="format-heading">How do you want to play?</h2><div class="setup-grid">' +
           optionButton('format', 'sudden', FORMAT_COPY.sudden.title, FORMAT_COPY.sudden.desc, settings.format === 'sudden') +
           optionButton('format', 'lives', FORMAT_COPY.lives.title, FORMAT_COPY.lives.desc, settings.format === 'lives', FORMAT_COPY.lives.badge) +
@@ -2128,8 +2156,9 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
           ['easy','normal','hard'].map(diff => optionButton('difficulty', diff, core.DIFFICULTY_RULES[diff].label, DIFFICULTY_COPY[diff], settings.difficulty === diff)).join('') +
         '</div></section>' : '') +
         '<div class="start-panel"><p class="setup-summary">' + esc(isDaily ? 'Daily Challenge · ' + dailyDate : configSummary(effectiveConfig)) + (isDaily ? '' : currentBestLabel(effectiveConfig)) + '</p>' +
+          '<div class="setup-actions"><button class="btn-secondary" id="randomise-settings">Randomise</button>' +
           '<button class="btn-primary start-btn" id="start-game">' + esc(isDaily ? dailyAction : 'Start Game') + '</button>' +
-          (isDaily && dailyStatus === 'completed' ? '<button class="btn-secondary" id="practice-daily">Practise again</button>' : '') + '</div>' +
+          (isDaily && dailyStatus === 'completed' ? '<button class="btn-secondary" id="practice-daily">Practise again</button>' : '') + '</div></div>' +
       '</div>';
 
     app.querySelectorAll('.setup-option').forEach(button => {
@@ -2138,6 +2167,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         renderLanding();
       });
     });
+    document.getElementById('randomise-settings').addEventListener('click', randomiseSettings);
     document.getElementById('start-game').addEventListener('click', isDaily ? startDailyOfficial : startGame);
     const practiceButton = document.getElementById('practice-daily');
     if (practiceButton) practiceButton.addEventListener('click', () => startDailyPractice());
@@ -2203,7 +2233,8 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     return '<div class="status-bar"><span class="mode-chip">Daily Challenge · ' + esc(core.formatDailyDate(s.date)) + (s.practice ? ' · Practice' : '') + '</span><div class="stats">' +
       '<span class="stat">Score<b>' + s.score + '</b></span>' +
       livesMarkup(s.livesRemaining) +
-      '<span class="stat">Streak<b>' + s.streak + '</b></span>' +
+      streakStat(s.streak) +
+      multiplierStat(s.streak + 1) +
       '</div></div>';
   }
 
@@ -2229,8 +2260,8 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
           card(s.challenger, { showRank: false, tappable: true, guess: 'higher' }) +
         '</div>' +
         '<div class="guess-row" role="group" aria-label="Your Daily Challenge guess">' +
-          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-hint">Closer to #1 · press H</span></button>' +
-          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-hint">Further from #1 · press L</span></button>' +
+          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-symbol" aria-hidden="true">↑</span><span class="key-hint">Closer to #1 · press H or ↑</span></button>' +
+          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-symbol" aria-hidden="true">↓</span><span class="key-hint">Further from #1 · press L or ↓</span></button>' +
         '</div>' +
       '</div>';
     document.getElementById('guess-higher').addEventListener('click', () => onDailyGuess(true));
@@ -2266,7 +2297,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         '<div class="result-panel ' + (result.wasCorrect ? 'correct' : 'wrong') + '">' +
           '<span class="result-text"><span class="verdict"><span aria-hidden="true">' + (result.wasCorrect ? '✓' : '✕') + '</span> ' + (result.wasCorrect ? 'Correct' : 'Incorrect') + '</span>' +
             '<span class="result-sub">' + esc(dailyRelationText(result)) + (result.lifeLost ? ' One life lost. ' + s.livesRemaining + ' lives remaining.' : '') + '</span></span>' +
-          '<span class="result-actions"><span class="points-chip gain">+' + result.points + '</span>' +
+          '<span class="result-actions">' + streakAddition(result) + '<span class="points-chip gain">+' + result.points + '</span>' +
             '<button class="next-btn" id="next-btn">' + (ending ? 'See results' : 'Next round') + '<span class="sr-only"> (press Enter)</span></button>' +
           '</span>' +
         '</div>' +
@@ -2274,6 +2305,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     document.getElementById('next-btn').addEventListener('click', ending ? renderDailyGameOver : onDailyNext);
     document.getElementById('next-btn').focus();
     announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + dailyRelationText(result) + ' Points gained ' + result.points + '. ' + (result.lifeLost ? s.livesRemaining + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
+    if (!ending) autoNext(onDailyNext);
   }
 
   function onDailyNext() {
@@ -2287,16 +2319,39 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     const s = game.state;
     const config = s.config;
     const label = configSummary(config);
-    const streak = '<span class="stat">Streak<b>' + s.streak + '</b></span>';
+    const streak = streakStat(s.streak);
     let stats = '';
     if (config.format === core.FORMAT.SUDDEN) {
       stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + streak + '<span class="stat">Best<b>' + readBest(config) + '</b></span>';
     } else if (config.format === core.FORMAT.LIVES) {
-      stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + livesMarkup(s.lives) + streak + '<span class="stat">Next<b>+' + core.pointsForLivesStreak(s.streak + 1) + '</b></span>';
+      stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + livesMarkup(s.lives) + streak + multiplierStat(s.streak + 1);
     } else {
       stats = '<span class="stat">Score<b>' + s.score + '</b></span><span class="stat timer-stat">Time<b>' + s.timeRemaining + 's</b></span><span class="stat">Correct<b>' + s.correct + '</b></span>' + streak;
     }
     return '<div class="status-bar"><span class="mode-chip">' + esc(label) + '</span><div class="stats">' + stats + '</div></div>';
+  }
+
+  function autoNext(callback) {
+    if (timedAutoNextId) window.clearTimeout(timedAutoNextId);
+    timedAutoNextId = window.setTimeout(() => {
+      timedAutoNextId = null;
+      callback();
+    }, revealDelayMs);
+  }
+
+  function streakStat(streak) {
+    const hot = streak >= 3 ? ' streak-hot' : '';
+    const flame = streak >= 2 ? '<span class="streak-flame" aria-hidden="true">🔥</span>' : '';
+    return '<span class="stat streak-stat' + hot + '">Streak<b>' + flame + streak + '</b></span>';
+  }
+
+  function multiplierStat(nextStreak) {
+    const points = core.pointsForLivesStreak(nextStreak);
+    return '<span class="stat">Next <span class="multiplier-pill"><span aria-hidden="true">🔥</span>+' + points + '</span></span>';
+  }
+
+  function streakAddition(result) {
+    return result.wasCorrect ? '<span class="streak-add"><span aria-hidden="true">🔥</span> +1 streak</span>' : '';
   }
 
   function livesMarkup(lives) {
@@ -2326,8 +2381,8 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
           card(s.challenger, { showRank: false, tappable: true, guess: 'higher' }) +
         '</div>' +
         '<div class="guess-row" role="group" aria-label="Your guess">' +
-          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-hint">Closer to #1 · press H</span></button>' +
-          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-hint">Further from #1 · press L</span></button>' +
+          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-symbol" aria-hidden="true">↑</span><span class="key-hint">Closer to #1 · press H or ↑</span></button>' +
+          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-symbol" aria-hidden="true">↓</span><span class="key-hint">Further from #1 · press L or ↓</span></button>' +
         '</div>' +
       '</div>';
     document.getElementById('guess-higher').addEventListener('click', () => onGuess(true));
@@ -2372,7 +2427,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         '<div class="result-panel ' + (result.wasCorrect ? 'correct' : 'wrong') + '">' +
           '<span class="result-text"><span class="verdict"><span aria-hidden="true">' + (result.wasCorrect ? '✓' : '✕') + '</span> ' + (result.wasCorrect ? 'Correct' : 'Incorrect') + '</span>' +
             '<span class="result-sub">' + esc(relationText(result)) + (result.lifeLost ? ' One life lost.' : '') + '</span></span>' +
-          '<span class="result-actions"><span class="points-chip ' + (result.points >= 0 ? 'gain' : 'loss') + '">' + pointsText(result) + '</span>' +
+          '<span class="result-actions">' + streakAddition(result) + '<span class="points-chip ' + (result.points >= 0 ? 'gain' : 'loss') + '">' + pointsText(result) + '</span>' +
             (timed && !ending ? '<span class="auto-next">Next...</span>' : '<button class="next-btn" id="next-btn">' + nextLabel + '<span class="sr-only"> (press Enter)</span></button>') +
           '</span>' +
         '</div>' +
@@ -2380,15 +2435,16 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + relationText(result) + ' Points ' + pointsText(result) + '. ' + (result.lifeLost ? s.lives + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
 
     if (timed && !ending) {
-      timedAutoNextId = window.setTimeout(() => {
+      autoNext(() => {
         if (!game || game.state.phase !== 'revealed') return;
         game.next();
         if (game.state.timeRemaining <= 0) renderGameOver();
         else renderRound();
-      }, revealDelayMs);
+      });
     } else {
       document.getElementById('next-btn').addEventListener('click', ending ? renderGameOver : onNext);
       document.getElementById('next-btn').focus();
+      if (!ending) autoNext(onNext);
     }
   }
 
@@ -2468,13 +2524,14 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
           '<button class="btn-secondary" id="view-daily">View today’s result</button>' +
           '<button class="btn-secondary" id="practice-daily-result">Practise again</button>' +
           '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
-          '<a class="btn-cta" href="' + esc(DONO_CONFIG.websiteUrl) + '" target="_blank" rel="noopener">Discover Dono</a>' +
+          '<button class="btn-cta" id="share-game">' + esc(DONO_CONFIG.ctaButtonLabel) + '</button>' +
         '</div>' +
         '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
-        '<div class="cta-block"><p>Know your university rankings? See how Dono helps university communities fund the things that matter.</p></div>' +
+        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
         '<p class="daily-limitation">This static Daily Challenge uses local browser storage for casual one-attempt tracking. It is not secure anti-cheat or cross-device enforcement.</p>' +
       '</div>';
     document.getElementById('share-daily').addEventListener('click', shareDailyResult);
+    document.getElementById('share-game').addEventListener('click', shareGame);
     document.getElementById('view-daily').addEventListener('click', () => {
       const saved = loadTodayDailyState();
       if (saved) dailyGame = core.createDailyGame(universities, dailyOptions(), saved);
@@ -2519,6 +2576,28 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     }
   }
 
+  function shareGame() {
+    const status = document.getElementById('share-status');
+    const url = window.location.href.split('#')[0];
+    const text = 'Try Dono Higher or Lower — University Rankings: ' + url;
+    const done = () => {
+      if (status) status.textContent = 'Game link copied.';
+      announce('Game link copied.');
+    };
+    const fail = () => {
+      if (status) status.textContent = 'Copy unavailable. Share this link: ' + url;
+    };
+    if (navigator.share) {
+      navigator.share({ title: 'Dono Higher or Lower', text: 'Can you beat my university rankings score?', url }).then(done).catch(() => {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text) ? done() : fail());
+    } else if (fallbackCopy(text)) {
+      done();
+    } else {
+      fail();
+    }
+  }
+
   function renderGameOver() {
     if (!game) return;
     clearTimers();
@@ -2534,12 +2613,14 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         '<div class="over-actions">' +
           '<button class="btn-primary" id="again-btn">Play again</button>' +
           '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
-          '<a class="btn-cta" href="' + esc(DONO_CONFIG.websiteUrl) + '" target="_blank" rel="noopener">Discover Dono</a>' +
+          '<button class="btn-cta" id="share-game">' + esc(DONO_CONFIG.ctaButtonLabel) + '</button>' +
         '</div>' +
-        '<div class="cta-block"><p>Know your university rankings? See how Dono helps university communities fund the things that matter.</p></div>' +
+        '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
+        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
       '</div>';
     document.getElementById('again-btn').addEventListener('click', startGame);
     document.getElementById('settings-btn').addEventListener('click', renderLanding);
+    document.getElementById('share-game').addEventListener('click', shareGame);
     document.getElementById('again-btn').focus();
     announce('Game over. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
   }
