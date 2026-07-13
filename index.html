@@ -15,8 +15,8 @@
     brandName: "Dono",
     websiteUrl: "https://joindono.com",
     tagline: "Helping university communities fund the things that matter.",
-    endOfGameCta: "Enjoyed the game? See how Dono helps university communities fund the things that matter.",
-    ctaButtonLabel: "Discover Dono",
+    endOfGameCta: "Enjoyed the game? Share it with your friends and see who knows university rankings best.",
+    ctaButtonLabel: "Share the game",
     // Set to a logo image URL to replace the text wordmark, or leave "" for text.
     logoUrl: "",
     datasetLabel: "QS World University Rankings 2027",
@@ -163,9 +163,16 @@ main {
   background: var(--dono-card); border: 1px solid var(--dono-line);
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
 }
+.setup-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .setup-summary { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-align: left; }
 .setup-best { display: block; font-family: var(--font-body); font-size: 13px; color: var(--dono-ink-soft); margin-top: 3px; }
 .start-btn { font-family: var(--font-display); font-size: 18px; padding-inline: 34px; }
+.daily-note {
+  background: var(--dono-card); border: 1px solid var(--dono-line);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+}
+.daily-note p { color: var(--dono-ink-soft); font-size: 15px; }
+.daily-note .daily-status { margin-top: 8px; color: var(--dono-brand-dark); font-weight: 600; }
 
 /* ── Status bar ─────────────────────────────────────────── */
 .status-bar {
@@ -181,7 +188,23 @@ main {
 .stat { font-size: 14px; color: var(--dono-ink-soft); }
 .stat b { font-family: var(--font-display); font-size: 20px; color: var(--dono-ink); margin-left: 6px; }
 .stat.streak-hot b { color: var(--dono-brand); }
-.streak-flame { color: var(--dono-accent); }
+.streak-stat b { display: inline-flex; align-items: center; gap: 5px; }
+.streak-flame {
+  color: var(--dono-accent); display: inline-block; font-size: 19px;
+  filter: drop-shadow(0 2px 4px rgba(255, 197, 61, .45));
+}
+.streak-hot .streak-flame { animation: flamePulse 700ms ease-in-out infinite alternate; }
+.multiplier-pill {
+  display: inline-flex; align-items: center; gap: 5px; background: var(--dono-accent);
+  color: var(--dono-ink); border-radius: 999px; padding: 4px 9px;
+  font-family: var(--font-display); font-weight: 800; font-size: 14px;
+}
+.streak-add {
+  color: var(--dono-correct); font-family: var(--font-display); font-weight: 800;
+  animation: streakAdd 700ms ease both;
+}
+@keyframes flamePulse { from { transform: translateY(1px) scale(.96); } to { transform: translateY(-1px) scale(1.08); } }
+@keyframes streakAdd { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .life-icons { display: inline-flex; gap: 4px; vertical-align: middle; }
 .life-dot {
   width: 12px; height: 12px; border-radius: 999px; border: 2px solid var(--dono-wrong);
@@ -241,6 +264,7 @@ main {
 .guess-btn:hover:enabled { background: var(--dono-brand-dark); transform: translateY(-2px); }
 .guess-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .guess-btn .key-hint { display: block; font-family: var(--font-body); font-weight: 500; font-size: 12px; opacity: .8; margin-top: 3px; }
+.key-symbol { font-size: 15px; margin-left: 4px; }
 .guess-btn.lower { background: var(--dono-ink); }
 .guess-btn.lower:hover:enabled { background: #000; }
 
@@ -303,6 +327,10 @@ main {
 .over-stat.record b, .over-stat.record span { color: var(--dono-ink); }
 .ended-line { color: var(--dono-ink-soft); margin: -12px auto 24px; max-width: 56ch; font-size: 14px; }
 .over-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 34px; }
+.share-status, .daily-limitation {
+  color: var(--dono-ink-soft); font-size: 13px; max-width: 58ch; margin: -16px auto 22px;
+}
+.daily-limitation { margin-top: 18px; margin-bottom: 0; }
 .btn-primary, .btn-secondary, .btn-cta {
   border-radius: 999px; padding: 13px 26px; font-weight: 600; font-size: 15px; border: none;
   text-decoration: none; display: inline-block;
@@ -338,6 +366,8 @@ main {
   .setup-grid { grid-template-columns: 1fr; }
   .setup-option { min-height: 0; }
   .start-panel { flex-direction: column; align-items: stretch; }
+  .setup-actions { justify-content: stretch; }
+  .setup-actions .btn-primary, .setup-actions .btn-secondary { flex: 1; }
   .setup-summary { text-align: center; }
   .guess-row { position: sticky; bottom: 10px; z-index: 2; }
 }
@@ -352,14 +382,12 @@ main {
 
 <header class="site-header">
   <a class="wordmark" id="wordmark" href="#" target="_blank" rel="noopener">Dono<span class="dot">.</span></a>
-  <span class="header-note">Made by Dono — <a id="header-cta" href="#" target="_blank" rel="noopener">joindono.com</a></span>
 </header>
 
 <main id="app" aria-live="off"></main>
 <div class="sr-only" role="status" aria-live="polite" id="announcer"></div>
 
 <footer class="dono-footer">
-  Made by <a id="footer-cta" href="#" target="_blank" rel="noopener">Dono</a> —
   <span id="footer-tagline"></span>
 </footer>
 
@@ -1892,7 +1920,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   const app = document.getElementById('app');
   const announcer = document.getElementById('announcer');
   const storagePrefix = 'dono_hol_';
-  const revealDelayMs = 650;
+  const revealDelayMs = 1000;
 
   const DEFAULT_SETTINGS = {
     format: core.FORMAT.LIVES,
@@ -1914,6 +1942,10 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
       title: '60 Seconds',
       desc: 'Race against the clock and score as many points as possible in 60 seconds.',
     },
+    daily: {
+      title: 'Daily Challenge',
+      desc: 'The same university sequence for everyone today. You have three lives — see how far you can get.',
+    },
   };
 
   const POOL_COPY = {
@@ -1925,9 +1957,9 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   };
 
   const DIFFICULTY_COPY = {
-    easy: 'Rank gap 151 to 400',
-    normal: 'Rank gap 50 to 150',
-    hard: 'Rank gap 1 to 49',
+    easy: 'More forgiving comparisons',
+    normal: 'Balanced comparisons',
+    hard: 'Tough close calls',
   };
 
   const wm = document.getElementById('wordmark');
@@ -1935,8 +1967,10 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   if (DONO_CONFIG.logoUrl) {
     wm.innerHTML = '<img src="' + DONO_CONFIG.logoUrl + '" alt="' + DONO_CONFIG.brandName + '">';
   }
-  document.getElementById('header-cta').href = DONO_CONFIG.websiteUrl;
-  document.getElementById('footer-cta').href = DONO_CONFIG.websiteUrl;
+  const headerCta = document.getElementById('header-cta');
+  const footerCta = document.getElementById('footer-cta');
+  if (headerCta) headerCta.href = DONO_CONFIG.websiteUrl;
+  if (footerCta) footerCta.href = DONO_CONFIG.websiteUrl;
   document.getElementById('footer-tagline').textContent = DONO_CONFIG.tagline;
 
   const csvNode = document.getElementById('dono-rankings');
@@ -1944,6 +1978,8 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   const universities = dataset.universities;
   let settings = loadSettings();
   let game = null;
+  let dailyGame = null;
+  let dailyPractice = false;
   let busy = false;
   let timerId = null;
   let timedAutoNextId = null;
@@ -1953,9 +1989,14 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     return String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   }
 
+  function browserStorage() {
+    try { return window.localStorage; } catch (e) { return null; }
+  }
+
   function safeRead(key, fallback) {
     try {
-      const value = localStorage.getItem(key);
+      const storage = browserStorage();
+      const value = storage ? storage.getItem(key) : null;
       return value === null ? fallback : value;
     } catch (e) {
       return fallback;
@@ -1963,7 +2004,10 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   }
 
   function safeWrite(key, value) {
-    try { localStorage.setItem(key, String(value)); } catch (e) { /* storage may be unavailable */ }
+    try {
+      const storage = browserStorage();
+      if (storage) storage.setItem(key, String(value));
+    } catch (e) { /* storage may be unavailable */ }
   }
 
   function loadSettings() {
@@ -2003,6 +2047,14 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     timedAutoNextId = null;
   }
 
+  function autoNext(callback) {
+    if (timedAutoNextId) window.clearTimeout(timedAutoNextId);
+    timedAutoNextId = window.setTimeout(() => {
+      timedAutoNextId = null;
+      callback();
+    }, revealDelayMs);
+  }
+
   function configSummary(config) {
     return [
       core.FORMAT_LABELS[config.format],
@@ -2018,6 +2070,51 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
   function currentBestLabel(config) {
     const best = readBest(config);
     return best ? '<span class="setup-best">Best: <b>' + best + '</b></span>' : '';
+  }
+
+  function randomiseSettings() {
+    const formats = [core.FORMAT.SUDDEN, core.FORMAT.LIVES, core.FORMAT.TIMED, core.FORMAT.DAILY];
+    const pools = [core.POOL.GLOBAL, core.POOL.TOP200, core.POOL.TOP50, core.POOL.UK, core.POOL.US];
+    const difficulties = [core.DIFFICULTY.EASY, core.DIFFICULTY.NORMAL, core.DIFFICULTY.HARD];
+    settings.format = formats[Math.floor(Math.random() * formats.length)];
+    settings.pool = settings.format === core.FORMAT.DAILY ? core.POOL.GLOBAL : pools[Math.floor(Math.random() * pools.length)];
+    settings.difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+    renderLanding();
+    announce('Random settings selected: ' + (settings.format === core.FORMAT.DAILY ? 'Daily Challenge' : configSummary(settings)) + '.');
+  }
+
+  function dailyOptions(extra) {
+    return Object.assign({
+      dateKey: core.getDailyDateKey(),
+      version: core.DAILY_VERSION,
+      dataset: core.DATASET_VERSION,
+      pool: core.POOL.GLOBAL,
+      practice: false,
+    }, extra || {});
+  }
+
+  function dailyKey(options) {
+    return core.dailyStorageKey(dailyOptions(options));
+  }
+
+  function loadTodayDailyState() {
+    return core.loadDailyState(browserStorage(), dailyKey());
+  }
+
+  function saveCurrentDailyState() {
+    if (!dailyGame || dailyPractice) return false;
+    const saved = core.serialiseDailyGameState(dailyGame.rawState);
+    const ok = core.saveDailyState(browserStorage(), dailyKey(saved), saved);
+    if (saved.completed) {
+      core.saveDailyState(browserStorage(), core.dailyLastCompletedKey(saved), saved);
+    }
+    return ok;
+  }
+
+  function officialDailyStatus() {
+    const state = loadTodayDailyState();
+    if (!state) return 'new';
+    return state.completed ? 'completed' : 'resume';
   }
 
   function renderError(message) {
@@ -2036,28 +2133,40 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     clearTimers();
     busy = false;
     game = null;
+    dailyGame = null;
+    dailyPractice = false;
     saveSettings();
-    const showDifficulty = settings.pool === core.POOL.GLOBAL;
+    const isDaily = settings.format === core.FORMAT.DAILY;
+    const showDifficulty = !isDaily && settings.pool === core.POOL.GLOBAL;
     const effectiveConfig = Object.assign({}, settings);
+    const dailyDate = core.formatDailyDate(core.getDailyDateKey());
+    const dailyState = loadTodayDailyState();
+    const dailyStatus = officialDailyStatus();
+    const dailyAction = dailyStatus === 'completed' ? 'View today’s result' : dailyStatus === 'resume' ? 'Resume Daily Challenge' : 'Start Game';
     app.innerHTML =
       '<div class="screen landing setup-screen">' +
         '<h1><span class="hi">Higher</span> or <span class="lo">Lower</span>?</h1>' +
         '<p class="lede">Guess which university is closer to #1 in the world rankings.</p>' +
-        '<p class="dataset">' + esc(DONO_CONFIG.datasetLabel) + ' · ' + universities.length + ' exact-ranked universities' +
-          (dataset.excludedBanded ? ' · ' + dataset.excludedBanded + ' banded entries excluded' : '') + '</p>' +
+        '<p class="dataset">Pick a format, choose your universities, then start guessing.</p>' +
         '<section class="setup-section" aria-labelledby="format-heading"><h2 id="format-heading">How do you want to play?</h2><div class="setup-grid">' +
           optionButton('format', 'sudden', FORMAT_COPY.sudden.title, FORMAT_COPY.sudden.desc, settings.format === 'sudden') +
           optionButton('format', 'lives', FORMAT_COPY.lives.title, FORMAT_COPY.lives.desc, settings.format === 'lives', FORMAT_COPY.lives.badge) +
           optionButton('format', 'timed', FORMAT_COPY.timed.title, FORMAT_COPY.timed.desc, settings.format === 'timed') +
+          optionButton('format', 'daily', FORMAT_COPY.daily.title, FORMAT_COPY.daily.desc + ' · ' + dailyDate, settings.format === 'daily') +
         '</div></section>' +
-        '<section class="setup-section" aria-labelledby="pool-heading"><h2 id="pool-heading">Which universities?</h2><div class="setup-grid">' +
+        (isDaily
+          ? '<section class="setup-section daily-note" aria-labelledby="daily-heading"><h2 id="daily-heading">Today’s challenge</h2><p>Daily Challenge · ' + esc(dailyDate) + ' · Global pool · ' + universities.length + ' exact-ranked universities</p>' +
+            (dailyState ? '<p class="daily-status">' + (dailyState.completed ? 'Official attempt completed. Practice replays are clearly labelled and do not change your score.' : 'Official attempt in progress. You can resume from this device.') + '</p>' : '') + '</section>'
+          : '<section class="setup-section" aria-labelledby="pool-heading"><h2 id="pool-heading">Which universities?</h2><div class="setup-grid">' +
           ['global','top200','top50','uk','us'].map(pool => optionButton('pool', pool, core.POOL_LABELS[pool], POOL_COPY[pool] + ' · ' + poolCount(pool) + ' universities', settings.pool === pool)).join('') +
-        '</div></section>' +
+        '</div></section>') +
         (showDifficulty ? '<section class="setup-section" aria-labelledby="difficulty-heading"><h2 id="difficulty-heading">How difficult?</h2><div class="setup-grid compact">' +
           ['easy','normal','hard'].map(diff => optionButton('difficulty', diff, core.DIFFICULTY_RULES[diff].label, DIFFICULTY_COPY[diff], settings.difficulty === diff)).join('') +
         '</div></section>' : '') +
-        '<div class="start-panel"><p class="setup-summary">' + esc(configSummary(effectiveConfig)) + currentBestLabel(effectiveConfig) + '</p>' +
-          '<button class="btn-primary start-btn" id="start-game">Start Game</button></div>' +
+        '<div class="start-panel"><p class="setup-summary">' + esc(isDaily ? 'Daily Challenge · ' + dailyDate : configSummary(effectiveConfig)) + (isDaily ? '' : currentBestLabel(effectiveConfig)) + '</p>' +
+          '<div class="setup-actions"><button class="btn-secondary" id="randomise-settings">Randomise</button>' +
+          '<button class="btn-primary start-btn" id="start-game">' + esc(isDaily ? dailyAction : 'Start Game') + '</button>' +
+          (isDaily && dailyStatus === 'completed' ? '<button class="btn-secondary" id="practice-daily">Practise again</button>' : '') + '</div></div>' +
       '</div>';
 
     app.querySelectorAll('.setup-option').forEach(button => {
@@ -2066,8 +2175,51 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         renderLanding();
       });
     });
-    document.getElementById('start-game').addEventListener('click', startGame);
+    document.getElementById('randomise-settings').addEventListener('click', randomiseSettings);
+    document.getElementById('start-game').addEventListener('click', isDaily ? startDailyOfficial : startGame);
+    const practiceButton = document.getElementById('practice-daily');
+    if (practiceButton) practiceButton.addEventListener('click', () => startDailyPractice());
     document.getElementById('start-game').focus();
+  }
+
+  function startDailyOfficial() {
+    clearTimers();
+    saveSettings();
+    dailyPractice = false;
+    const saved = loadTodayDailyState();
+    if (saved && saved.completed) {
+      try {
+        dailyGame = core.createDailyGame(universities, dailyOptions(), saved);
+      } catch (error) {
+        renderError(error.message);
+        return;
+      }
+      renderDailyGameOver();
+      return;
+    }
+    try {
+      dailyGame = core.createDailyGame(universities, dailyOptions(), saved);
+      saveCurrentDailyState();
+    } catch (error) {
+      renderError(error.message);
+      return;
+    }
+    renderDailyCurrent();
+    announce('Daily Challenge started for ' + core.formatDailyDate(core.getDailyDateKey()) + '.');
+  }
+
+  function startDailyPractice() {
+    clearTimers();
+    dailyPractice = true;
+    try {
+      dailyGame = core.createDailyGame(universities, dailyOptions({ practice: true }));
+      dailyGame.rawState.practice = true;
+    } catch (error) {
+      renderError(error.message);
+      return;
+    }
+    renderDailyCurrent();
+    announce('Practice Daily Challenge started for ' + core.formatDailyDate(core.getDailyDateKey()) + '.');
   }
 
   function startGame() {
@@ -2084,20 +2236,122 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     announce('New ' + configSummary(settings) + ' game started.');
   }
 
+  function dailyStatusBar() {
+    const s = dailyGame.state;
+    return '<div class="status-bar"><span class="mode-chip">Daily Challenge · ' + esc(core.formatDailyDate(s.date)) + (s.practice ? ' · Practice' : '') + '</span><div class="stats">' +
+      '<span class="stat">Score<b>' + s.score + '</b></span>' +
+      livesMarkup(s.livesRemaining) +
+      streakStat(s.streak) +
+      multiplierStat(s.streak + 1) +
+      '</div></div>';
+  }
+
+  function renderDailyCurrent() {
+    const s = dailyGame.state;
+    if (s.phase === 'over' || s.completed) {
+      renderDailyGameOver();
+    } else if (s.phase === 'revealed' && s.lastResult) {
+      renderDailyReveal(s.lastResult);
+    } else {
+      renderDailyRound();
+    }
+  }
+
+  function renderDailyRound() {
+    busy = false;
+    const s = dailyGame.state;
+    app.innerHTML =
+      '<div class="screen game-screen">' + dailyStatusBar() +
+        '<div class="duel">' +
+          card(s.current, { showRank: true }) +
+          '<div class="vs-spine"><span class="vs-badge" aria-hidden="true">vs</span></div>' +
+          card(s.challenger, { showRank: false, tappable: true, guess: 'higher' }) +
+        '</div>' +
+        '<div class="guess-row" role="group" aria-label="Your Daily Challenge guess">' +
+          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-symbol" aria-hidden="true">↑</span><span class="key-hint">Closer to #1 · press H or ↑</span></button>' +
+          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-symbol" aria-hidden="true">↓</span><span class="key-hint">Further from #1 · press L or ↓</span></button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('guess-higher').addEventListener('click', () => onDailyGuess(true));
+    document.getElementById('guess-lower').addEventListener('click', () => onDailyGuess(false));
+    app.querySelector('.uni-card.tappable').addEventListener('click', () => onDailyGuess(true));
+    announce('Daily Challenge comparison. Is ' + s.challenger.name + ' ranked higher or lower than ' + s.current.name + '?');
+  }
+
+  function onDailyGuess(guessHigher) {
+    if (busy || !dailyGame || dailyGame.state.phase !== 'guessing') return;
+    busy = true;
+    const result = dailyGame.guess(guessHigher);
+    if (!result) return;
+    saveCurrentDailyState();
+    renderDailyReveal(result);
+  }
+
+  function renderDailyReveal(result) {
+    const s = dailyGame.state;
+    const ending = s.phase === 'over' || s.completed;
+    app.innerHTML =
+      '<div class="screen game-screen">' + dailyStatusBar() +
+        '<div class="duel">' +
+          card(result.current, { showRank: true }) +
+          '<div class="vs-spine"><span class="vs-badge" aria-hidden="true">vs</span></div>' +
+          card(result.challenger, { showRank: true, reveal: true }) +
+        '</div>' +
+        '<div class="result-panel ' + (result.wasCorrect ? 'correct' : 'wrong') + '">' +
+          '<span class="result-text"><span class="verdict"><span aria-hidden="true">' + (result.wasCorrect ? '✓' : '✕') + '</span> ' + (result.wasCorrect ? 'Correct' : 'Incorrect') + '</span>' +
+            '<span class="result-sub">' + esc(dailyRelationText(result)) + (result.lifeLost ? ' One life lost. ' + s.livesRemaining + ' lives remaining.' : '') + '</span></span>' +
+          '<span class="result-actions">' + streakAddition(result) + '<span class="points-chip gain">+' + result.points + '</span>' +
+            '<button class="next-btn" id="next-btn">' + (ending ? 'See results' : 'Next round') + '<span class="sr-only"> (press Enter)</span></button>' +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('next-btn').addEventListener('click', ending ? renderDailyGameOver : onDailyNext);
+    document.getElementById('next-btn').focus();
+    announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + dailyRelationText(result) + ' Points gained ' + result.points + '. ' + (result.lifeLost ? s.livesRemaining + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
+    if (!ending) autoNext(onDailyNext);
+  }
+
+  function dailyRelationText(result) {
+    return result.challenger.name + ' is ranked ' + (result.challengerIsHigher ? 'higher' : 'lower') +
+      ' than ' + result.current.name + ' (' + core.ordinal(result.challenger.rank) + ' vs ' + core.ordinal(result.current.rank) + ').';
+  }
+
+  function onDailyNext() {
+    if (!dailyGame || dailyGame.state.phase !== 'revealed') return;
+    dailyGame.next();
+    saveCurrentDailyState();
+    renderDailyCurrent();
+  }
+
   function statusBar() {
     const s = game.state;
     const config = s.config;
     const label = configSummary(config);
-    const streak = '<span class="stat">Streak<b>' + s.streak + '</b></span>';
+    const streak = streakStat(s.streak);
     let stats = '';
     if (config.format === core.FORMAT.SUDDEN) {
       stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + streak + '<span class="stat">Best<b>' + readBest(config) + '</b></span>';
     } else if (config.format === core.FORMAT.LIVES) {
-      stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + livesMarkup(s.lives) + streak + '<span class="stat">Next<b>+' + core.pointsForLivesStreak(s.streak + 1) + '</b></span>';
+      stats = '<span class="stat">Score<b>' + s.score + '</b></span>' + livesMarkup(s.lives) + streak + multiplierStat(s.streak + 1);
     } else {
       stats = '<span class="stat">Score<b>' + s.score + '</b></span><span class="stat timer-stat">Time<b>' + s.timeRemaining + 's</b></span><span class="stat">Correct<b>' + s.correct + '</b></span>' + streak;
     }
     return '<div class="status-bar"><span class="mode-chip">' + esc(label) + '</span><div class="stats">' + stats + '</div></div>';
+  }
+
+  function streakStat(streak) {
+    const hot = streak >= 3 ? ' streak-hot' : '';
+    const flame = streak >= 2 ? '<span class="streak-flame" aria-hidden="true">🔥</span>' : '';
+    return '<span class="stat streak-stat' + hot + '">Streak<b>' + flame + streak + '</b></span>';
+  }
+
+  function multiplierStat(nextStreak) {
+    const points = core.pointsForLivesStreak(nextStreak);
+    return '<span class="stat">Next <span class="multiplier-pill"><span aria-hidden="true">🔥</span>+' + points + '</span></span>';
+  }
+
+  function streakAddition(result) {
+    return result.wasCorrect ? '<span class="streak-add"><span aria-hidden="true">🔥</span> +1 streak</span>' : '';
   }
 
   function livesMarkup(lives) {
@@ -2127,8 +2381,8 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
           card(s.challenger, { showRank: false, tappable: true, guess: 'higher' }) +
         '</div>' +
         '<div class="guess-row" role="group" aria-label="Your guess">' +
-          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-hint">Closer to #1 · press H</span></button>' +
-          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-hint">Further from #1 · press L</span></button>' +
+          '<button class="guess-btn" id="guess-higher">Higher ranked<span class="key-symbol" aria-hidden="true">↑</span><span class="key-hint">Closer to #1 · press H or ↑</span></button>' +
+          '<button class="guess-btn lower" id="guess-lower">Lower ranked<span class="key-symbol" aria-hidden="true">↓</span><span class="key-hint">Further from #1 · press L or ↓</span></button>' +
         '</div>' +
       '</div>';
     document.getElementById('guess-higher').addEventListener('click', () => onGuess(true));
@@ -2173,7 +2427,7 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         '<div class="result-panel ' + (result.wasCorrect ? 'correct' : 'wrong') + '">' +
           '<span class="result-text"><span class="verdict"><span aria-hidden="true">' + (result.wasCorrect ? '✓' : '✕') + '</span> ' + (result.wasCorrect ? 'Correct' : 'Incorrect') + '</span>' +
             '<span class="result-sub">' + esc(relationText(result)) + (result.lifeLost ? ' One life lost.' : '') + '</span></span>' +
-          '<span class="result-actions"><span class="points-chip ' + (result.points >= 0 ? 'gain' : 'loss') + '">' + pointsText(result) + '</span>' +
+          '<span class="result-actions">' + streakAddition(result) + '<span class="points-chip ' + (result.points >= 0 ? 'gain' : 'loss') + '">' + pointsText(result) + '</span>' +
             (timed && !ending ? '<span class="auto-next">Next...</span>' : '<button class="next-btn" id="next-btn">' + nextLabel + '<span class="sr-only"> (press Enter)</span></button>') +
           '</span>' +
         '</div>' +
@@ -2181,15 +2435,16 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + relationText(result) + ' Points ' + pointsText(result) + '. ' + (result.lifeLost ? s.lives + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
 
     if (timed && !ending) {
-      timedAutoNextId = window.setTimeout(() => {
+      autoNext(() => {
         if (!game || game.state.phase !== 'revealed') return;
         game.next();
         if (game.state.timeRemaining <= 0) renderGameOver();
         else renderRound();
-      }, revealDelayMs);
+      });
     } else {
       document.getElementById('next-btn').addEventListener('click', ending ? renderGameOver : onNext);
       document.getElementById('next-btn').focus();
+      if (!ending) autoNext(onNext);
     }
   }
 
@@ -2234,6 +2489,115 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
     return stats.map(([label, value]) => '<div class="over-stat"><b>' + value + '</b><span>' + esc(label) + '</span></div>').join('');
   }
 
+  function dailyResultStats() {
+    const s = dailyGame.state;
+    const attempts = s.answerPattern.length;
+    const reached = s.current ? s.current.name : 'Sequence complete';
+    const stats = [
+      ['Final score', s.score],
+      ['Correct', s.correct],
+      ['Incorrect', s.incorrect],
+      ['Accuracy', core.accuracy(s.correct, attempts) + '%'],
+      ['Longest streak', s.bestStreak],
+      ['Comparisons', attempts],
+      ['Lives used', 3 - s.livesRemaining],
+    ];
+    return '<div class="over-stats">' + stats.map(([label, value]) => '<div class="over-stat"><b>' + value + '</b><span>' + esc(label) + '</span></div>').join('') + '</div>' +
+      '<p class="ended-line">University reached: ' + esc(reached) + '</p>';
+  }
+
+  function renderDailyGameOver() {
+    if (!dailyGame) return;
+    clearTimers();
+    busy = false;
+    dailyGame.complete();
+    saveCurrentDailyState();
+    const s = dailyGame.state;
+    const officialLabel = s.practice ? 'Practice replay' : 'Official attempt';
+    app.innerHTML =
+      '<div class="screen over daily-over">' +
+        '<p class="over-kicker">Daily Challenge · ' + esc(core.formatDailyDate(s.date)) + ' · ' + esc(officialLabel) + '</p>' +
+        '<h2>' + (s.practice ? 'Practice complete.' : 'Today’s result.') + '</h2>' +
+        dailyResultStats() +
+        '<div class="over-actions">' +
+          '<button class="btn-primary" id="share-daily">Share result</button>' +
+          '<button class="btn-secondary" id="view-daily">View today’s result</button>' +
+          '<button class="btn-secondary" id="practice-daily-result">Practise again</button>' +
+          '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
+          '<button class="btn-cta" id="share-game">Share game</button>' +
+        '</div>' +
+        '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
+        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
+        '<p class="daily-limitation">This static Daily Challenge uses local browser storage for casual one-attempt tracking. It is not secure anti-cheat or cross-device enforcement.</p>' +
+      '</div>';
+    document.getElementById('share-daily').addEventListener('click', shareDailyResult);
+    document.getElementById('share-game').addEventListener('click', shareGame);
+    document.getElementById('view-daily').addEventListener('click', () => {
+      const saved = loadTodayDailyState();
+      if (saved) dailyGame = core.createDailyGame(universities, dailyOptions(), saved);
+      renderDailyGameOver();
+    });
+    document.getElementById('practice-daily-result').addEventListener('click', () => startDailyPractice());
+    document.getElementById('settings-btn').addEventListener('click', renderLanding);
+    document.getElementById('share-daily').focus();
+    announce('Daily Challenge complete. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
+  }
+
+  function fallbackCopy(text) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.top = '-1000px';
+    document.body.appendChild(area);
+    area.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    document.body.removeChild(area);
+    return copied;
+  }
+
+  function shareDailyResult() {
+    const status = document.getElementById('share-status');
+    const text = core.createDailyShareText(dailyGame.state);
+    const done = () => {
+      status.textContent = 'Result copied without spoilers.';
+      announce('Daily Challenge result copied.');
+    };
+    const fail = () => {
+      status.textContent = 'Copy unavailable. Select and copy: ' + text.replace(/\n/g, ' / ');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text) ? done() : fail());
+    } else if (fallbackCopy(text)) {
+      done();
+    } else {
+      fail();
+    }
+  }
+
+  function shareGame() {
+    const status = document.getElementById('share-status');
+    const url = window.location.href.split('#')[0];
+    const text = 'Try Dono Higher or Lower — University Rankings: ' + url;
+    const done = () => {
+      if (status) status.textContent = 'Game link copied.';
+      announce('Game link copied.');
+    };
+    const fail = () => {
+      if (status) status.textContent = 'Copy unavailable. Share this link: ' + url;
+    };
+    if (navigator.share) {
+      navigator.share({ title: 'Dono Higher or Lower', text: 'Can you beat my university rankings score?', url }).then(done).catch(() => {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text) ? done() : fail());
+    } else if (fallbackCopy(text)) {
+      done();
+    } else {
+      fail();
+    }
+  }
+
   function renderGameOver() {
     if (!game) return;
     clearTimers();
@@ -2249,19 +2613,33 @@ Index,Rank,Previous Rank,Name,Country/Territory,Region,Size,Focus,Research,Statu
         '<div class="over-actions">' +
           '<button class="btn-primary" id="again-btn">Play again</button>' +
           '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
-          '<a class="btn-cta" href="' + esc(DONO_CONFIG.websiteUrl) + '" target="_blank" rel="noopener">Discover Dono</a>' +
+          '<button class="btn-cta" id="share-game">Share game</button>' +
         '</div>' +
-        '<div class="cta-block"><p>Know your university rankings? See how Dono helps university communities fund the things that matter.</p></div>' +
+        '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
+        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
       '</div>';
     document.getElementById('again-btn').addEventListener('click', startGame);
     document.getElementById('settings-btn').addEventListener('click', renderLanding);
+    document.getElementById('share-game').addEventListener('click', shareGame);
     document.getElementById('again-btn').focus();
     announce('Game over. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
   }
 
   document.addEventListener('keydown', (event) => {
-    if (!game || (event.target && /^(input|textarea|select)$/i.test(event.target.tagName))) return;
+    if ((!game && !dailyGame) || (event.target && /^(input|textarea|select)$/i.test(event.target.tagName))) return;
     const key = event.key.toLowerCase();
+    if (dailyGame) {
+      if (dailyGame.state.phase === 'guessing') {
+        if (key === 'h' || key === 'arrowup') { event.preventDefault(); onDailyGuess(true); }
+        if (key === 'l' || key === 'arrowdown') { event.preventDefault(); onDailyGuess(false); }
+      } else if (dailyGame.state.phase === 'revealed' && (key === 'enter' || key === ' ')) {
+        if (document.activeElement !== document.getElementById('next-btn')) {
+          event.preventDefault();
+          onDailyNext();
+        }
+      }
+      return;
+    }
     if (game.state.phase === 'guessing') {
       if (key === 'h' || key === 'arrowup') { event.preventDefault(); onGuess(true); }
       if (key === 'l' || key === 'arrowdown') { event.preventDefault(); onGuess(false); }

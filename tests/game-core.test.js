@@ -21,6 +21,20 @@ function rng(values = [0]) {
   return () => values[index++ % values.length];
 }
 
+function memoryStorage(fail = false) {
+  const map = new Map();
+  return {
+    getItem(key) {
+      if (fail) throw new Error('blocked');
+      return map.has(key) ? map.get(key) : null;
+    },
+    setItem(key, value) {
+      if (fail) throw new Error('blocked');
+      map.set(key, String(value));
+    },
+  };
+}
+
 function test(name, fn) {
   try {
     fn();
@@ -171,4 +185,142 @@ test('localStorage-style failures can be caught by persistence callers', () => {
     setItem() { throw new Error('blocked'); },
   };
   assert.throws(() => failingStorage.getItem('x'));
+});
+
+test('same date and dataset version generate the same Daily sequence', () => {
+  const universities = makeUniversities(120);
+  const a = core.createDailySequence(universities, { dateKey: '2026-07-13', dataset: 'qs2027' }).map(u => u.id);
+  const b = core.createDailySequence(universities, { dateKey: '2026-07-13', dataset: 'qs2027' }).map(u => u.id);
+  assert.deepEqual(a, b);
+});
+
+test('different Daily dates generate different sequences', () => {
+  const universities = makeUniversities(120);
+  const a = core.createDailySequence(universities, { dateKey: '2026-07-13' }).map(u => u.id).join(',');
+  const b = core.createDailySequence(universities, { dateKey: '2026-07-14' }).map(u => u.id).join(',');
+  assert.notEqual(a, b);
+});
+
+test('same seed produces identical seeded RNG results', () => {
+  const seed = core.hashStringToSeed('stable-seed');
+  const a = core.seededShuffle([1, 2, 3, 4, 5], core.createSeededRng(seed));
+  const b = core.seededShuffle([1, 2, 3, 4, 5], core.createSeededRng(seed));
+  assert.deepEqual(a, b);
+});
+
+test('Daily sequence has no adjacent equal ranks and no duplicate universities', () => {
+  const universities = [
+    { id: 1, name: 'A', rank: 1, country: 'UK' },
+    { id: 2, name: 'B', rank: 1, country: 'UK' },
+    { id: 3, name: 'C', rank: 2, country: 'UK' },
+    { id: 4, name: 'D', rank: 3, country: 'UK' },
+    { id: 5, name: 'E', rank: 3, country: 'UK' },
+    { id: 6, name: 'F', rank: 4, country: 'UK' },
+  ];
+  const sequence = core.createDailySequence(universities, { dateKey: '2026-07-13' });
+  assert.equal(new Set(sequence.map(u => u.id)).size, sequence.length);
+  for (let i = 1; i < sequence.length; i++) {
+    assert.notEqual(sequence[i].rank, sequence[i - 1].rank);
+  }
+});
+
+test('Daily challenger becomes known university next round', () => {
+  const game = core.createDailyGame(makeUniversities(50), { dateKey: '2026-07-13' });
+  const challenger = game.state.challenger;
+  const correctGuess = challenger.rank < game.state.current.rank;
+  game.guess(correctGuess);
+  game.next();
+  assert.equal(game.state.current.id, challenger.id);
+});
+
+test('three incorrect Daily answers end the challenge', () => {
+  const game = core.createDailyGame(makeUniversities(50), { dateKey: '2026-07-13' });
+  for (let i = 0; i < 3; i++) {
+    const correctGuess = core.isChallengerHigher(game.state.current, game.state.challenger);
+    game.guess(!correctGuess);
+    if (game.state.phase === 'revealed') game.next();
+  }
+  assert.equal(game.state.phase, 'over');
+  assert.equal(game.state.completed, true);
+  assert.equal(game.state.livesRemaining, 0);
+});
+
+test('refreshing preserves Daily score, lives, streak and position', () => {
+  const storage = memoryStorage();
+  const key = core.dailyStorageKey({ dateKey: '2026-07-13' });
+  const game = core.createDailyGame(makeUniversities(50), { dateKey: '2026-07-13' });
+  const correctGuess = game.state.challenger.rank < game.state.current.rank;
+  game.guess(correctGuess);
+  core.saveDailyState(storage, key, core.serialiseDailyGameState(game.rawState));
+  const saved = core.loadDailyState(storage, key);
+  const resumed = core.createDailyGame(makeUniversities(50), { dateKey: '2026-07-13' }, saved);
+  assert.equal(resumed.state.score, game.state.score);
+  assert.equal(resumed.state.livesRemaining, game.state.livesRemaining);
+  assert.equal(resumed.state.streak, game.state.streak);
+  assert.equal(resumed.state.currentIndex, game.state.currentIndex);
+  assert.equal(resumed.state.phase, 'revealed');
+});
+
+test('completed official Daily attempt cannot be restarted as official state', () => {
+  const saved = core.createDailyState(makeUniversities(50), { dateKey: '2026-07-13' });
+  saved.completed = true;
+  saved.phase = 'over';
+  const game = core.createDailyGame(makeUniversities(50), { dateKey: '2026-07-13' }, saved);
+  assert.equal(game.state.phase, 'over');
+  assert.equal(game.guess(true), null);
+});
+
+test('Practice Daily state does not overwrite official result when saved separately', () => {
+  const storage = memoryStorage();
+  const officialKey = core.dailyStorageKey({ dateKey: '2026-07-13' });
+  const official = core.createDailyState(makeUniversities(50), { dateKey: '2026-07-13' });
+  official.score = 9;
+  official.completed = true;
+  core.saveDailyState(storage, officialKey, official);
+  const practice = core.createDailyState(makeUniversities(50), { dateKey: '2026-07-13', practice: true });
+  practice.score = 99;
+  assert.equal(core.loadDailyState(storage, officialKey).score, 9);
+});
+
+test('Daily share text does not reveal university names or rankings', () => {
+  const game = core.createDailyGame(makeUniversities(20), { dateKey: '2026-07-13' });
+  const firstName = game.state.current.name;
+  const firstRank = String(game.state.current.rank);
+  const correctGuess = game.state.challenger.rank < game.state.current.rank;
+  game.guess(correctGuess);
+  const text = core.createDailyShareText(game.state);
+  assert.equal(text.includes(firstName), false);
+  assert.equal(text.includes(` ${firstRank} `), false);
+});
+
+test('Daily date key uses UTC', () => {
+  assert.equal(core.getDailyDateKey(new Date('2026-07-13T23:30:00-02:00')), '2026-07-14');
+});
+
+test('Daily persistence handles localStorage failure', () => {
+  const storage = memoryStorage(true);
+  assert.equal(core.loadDailyState(storage, 'x'), null);
+  assert.equal(core.saveDailyState(storage, 'x', { ok: true }), false);
+});
+
+test('changing dataset version changes Daily storage key and seed', () => {
+  assert.notEqual(
+    core.dailyStorageKey({ dateKey: '2026-07-13', dataset: 'qs2027' }),
+    core.dailyStorageKey({ dateKey: '2026-07-13', dataset: 'qs2028' })
+  );
+  assert.notEqual(
+    core.dailySeedSource({ dateKey: '2026-07-13', dataset: 'qs2027' }),
+    core.dailySeedSource({ dateKey: '2026-07-13', dataset: 'qs2028' })
+  );
+});
+
+test('Daily sequence algorithm terminates with many tied ranks', () => {
+  const universities = [];
+  for (let i = 0; i < 80; i++) {
+    universities.push({ id: i, name: `Tie ${i}`, rank: i < 60 ? 1 : i, country: 'UK' });
+  }
+  const sequence = core.createDailySequence(universities, { dateKey: '2026-07-13' });
+  for (let i = 1; i < sequence.length; i++) {
+    assert.notEqual(sequence[i].rank, sequence[i - 1].rank);
+  }
 });
