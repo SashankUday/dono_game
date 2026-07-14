@@ -13,6 +13,7 @@
   const POOL = {
     GLOBAL: 'global',
     TOP200: 'top200',
+    TOP500: 'top500',
     TOP50: 'top50',
     UK: 'uk',
     US: 'us',
@@ -33,7 +34,7 @@
   const FORMAT_LABELS = {
     sudden: 'Sudden Death',
     lives: 'Three Lives',
-    timed: '60 Seconds',
+    timed: 'Timed',
     daily: 'Daily Challenge',
   };
 
@@ -44,6 +45,7 @@
   const POOL_LABELS = {
     global: 'Global',
     top200: 'Top 200',
+    top500: 'Top 500',
     top50: 'Top 50',
     uk: 'UK Universities',
     us: 'US Universities',
@@ -145,6 +147,7 @@
       h => h === 'rank' || h === '2027' || h === 'ranking',
       h => /\brank\b/.test(h) && !/\bprevious\b|\bprev\b|\bar\b|\ber\b|\bfsr\b|\bcpf\b|\bifr\b|\bisr\b|\birn\b|\beo\b|\bsus\b/.test(h),
     ]);
+    const indexCol = findColumn(header, [h => h === 'index']);
     const nameCol = findColumn(header, [
       h => h === 'name' || h === 'institution' || h === 'university',
       h => /institution|university|\bname\b/.test(h),
@@ -176,19 +179,18 @@
       if (!name) continue;
       if (!/^\d+$/.test(rankRaw)) {
         if (rankRaw) {
-          const bandStart = parseInt(rankRaw, 10);
+          const sourceIndex = parseInt((indexCol === -1 ? '' : row[indexCol]) || '', 10);
           const bandedUniversity = {
             id: dailyUniversities.length,
             name,
-            // Daily uses the published lower edge of a rank band. Equal bands are
-            // never compared, so no order is invented within a published band.
-            rank: bandStart,
-            rankBand: rankRaw,
+            // Rank bands cannot be compared directly, so use the source row index
+            // as the published ordering value for every game mode.
+            rank: Number.isFinite(sourceIndex) ? sourceIndex : parseInt(rankRaw, 10),
             country: normaliseCountry(countryCol !== -1 ? row[countryCol] : ''),
           };
           excludedBanded++;
           bandedUniversities.push(bandedUniversity);
-          if (Number.isFinite(bandStart)) dailyUniversities.push(bandedUniversity);
+          if (Number.isFinite(bandedUniversity.rank)) dailyUniversities.push(bandedUniversity);
         }
         continue;
       }
@@ -358,6 +360,7 @@
       currentIndex: 0,
       livesRemaining: 3,
       answerPattern: [],
+      history: [],
       sequenceIds: sequence.map(u => u.id),
     };
   }
@@ -379,6 +382,7 @@
       currentIndex: state.currentIndex,
       livesRemaining: state.livesRemaining,
       answerPattern: state.answerPattern.slice(),
+      history: (state.history || []).slice(),
       sequenceIds: state.sequenceIds.slice(),
       phase: state.phase,
       lastResult: state.lastResult || null,
@@ -420,6 +424,7 @@
 
   function buildPool(universities, poolKey) {
     if (poolKey === POOL.TOP200) return universities.filter(u => u.rank >= 1 && u.rank <= 200);
+    if (poolKey === POOL.TOP500) return universities.filter(u => u.rank >= 1 && u.rank <= 500);
     if (poolKey === POOL.TOP50) return universities.filter(u => u.rank >= 1 && u.rank <= 50);
     if (poolKey === POOL.UK) return universities.filter(u => normaliseCountry(u.country) === 'United Kingdom');
     if (poolKey === POOL.US) return universities.filter(u => normaliseCountry(u.country) === 'United States of America');
@@ -506,6 +511,15 @@
     return challenger.rank < current.rank;
   }
 
+  function historyEntry(current, challenger, guessHigher, wasCorrect) {
+    return {
+      current: { name: current.name, rank: current.rank, country: current.country || '' },
+      challenger: { name: challenger.name, rank: challenger.rank, country: challenger.country || '' },
+      answer: guessHigher ? 'higher' : 'lower',
+      wasCorrect,
+    };
+  }
+
   function createGame(universities, options, rng) {
     const config = Object.assign({
       format: FORMAT.LIVES,
@@ -533,6 +547,7 @@
       phase: 'guessing',
       lastResult: null,
       endedByComparison: null,
+      history: [],
     };
     state.challenger = selector.chooseChallenger(state.current);
 
@@ -574,6 +589,7 @@
         current: state.current,
         challenger: state.challenger,
       };
+      state.history.push(historyEntry(state.current, state.challenger, guessHigher, wasCorrect));
 
       if (config.format === FORMAT.SUDDEN && !wasCorrect) {
         state.endedByComparison = state.lastResult;
@@ -623,6 +639,7 @@
     }, options || {});
     const state = savedState ? Object.assign({}, savedState, {
       answerPattern: (savedState.answerPattern || []).slice(),
+      history: (savedState.history || []).slice(),
       sequenceIds: (savedState.sequenceIds || []).slice(),
       lastResult: savedState.lastResult || null,
       phase: savedState.phase,
@@ -696,6 +713,7 @@
         current: a,
         challenger: b,
       };
+      state.history.push(historyEntry(a, b, guessHigher, wasCorrect));
       if (state.livesRemaining <= 0 || state.currentIndex + 1 >= state.sequenceIds.length - 1) {
         state.completed = true;
         state.phase = 'over';
