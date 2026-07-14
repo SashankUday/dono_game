@@ -165,14 +165,15 @@ main {
   border-radius: 999px; padding: 3px 7px; white-space: nowrap;
 }
 .start-panel {
-  margin-top: 28px; padding: 18px; border-radius: var(--radius);
-  background: var(--dono-card); border: 1px solid var(--dono-line);
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 40px; display: flex; justify-content: center;
 }
-.setup-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-.setup-summary { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-align: left; }
+.setup-actions { display: flex; align-items: center; flex-direction: column; gap: 14px; width: min(100%, 280px); }
 .setup-best { display: block; font-family: var(--font-body); font-size: 13px; color: var(--dono-ink-soft); margin-top: 3px; }
-.start-btn { font-family: var(--font-display); font-size: 18px; padding-inline: 34px; }
+.start-btn { width: 100%; font-family: var(--font-display); font-size: 20px; padding: 15px 34px; }
+.setup-actions #randomise-settings { padding: 11px 24px; font-size: 15px; }
+.difficulty-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.difficulty-grid .setup-option { min-height: 64px; padding: 10px; }
+.difficulty-grid .option-heading { font-size: 16px; }
 .daily-note {
   background: var(--dono-card); border: 1px solid var(--dono-line);
   border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
@@ -180,14 +181,17 @@ main {
 .daily-note p { color: var(--dono-ink-soft); font-size: 15px; }
 .daily-note .daily-status { margin-top: 8px; color: var(--dono-brand-dark); font-weight: 600; }
 .setup-option .mode-desc { font-size: 12px; line-height: 1.35; }
+.category-grid { gap: 9px; }
+.category-grid .setup-option { min-height: 78px; padding: 12px; }
+.category-grid .option-heading { font-size: 16px; }
 
 /* ── How to play ───────────────────────────────────────── */
-.how-to-play-dialog { border: 0; padding: 0; background: transparent; max-width: min(620px, calc(100% - 32px)); }
+.how-to-play-dialog { border: 0; padding: 0; background: transparent; width: min(680px, calc(100% - 32px)); max-width: none; max-height: calc(100vh - 32px); margin: auto; }
 .how-to-play-dialog::backdrop { background: rgba(23, 22, 43, .48); }
 .how-to-play-panel { background: var(--dono-card); border-radius: var(--radius); padding: clamp(24px, 5vw, 38px); box-shadow: var(--shadow); position: relative; }
 .how-to-play-panel h2 { font-family: var(--font-display); font-size: 30px; margin-bottom: 8px; }
 .how-to-play-panel > p { color: var(--dono-ink-soft); }
-.how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+.how-steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 24px 0; }
 .how-step { background: var(--dono-brand-soft); border-radius: 14px; padding: 14px; text-align: center; }
 .how-visual { display: block; font-size: 32px; margin-bottom: 6px; }
 .how-step b { display: block; font-family: var(--font-display); }
@@ -256,6 +260,7 @@ main {
   font-size: clamp(19px, 2.6vw, 25px); line-height: 1.2; text-wrap: balance;
 }
 .uni-country { font-size: 13px; color: var(--dono-ink-soft); margin-top: 6px; }
+.uni-flag { margin-right: 5px; }
 .uni-rank {
   font-family: var(--font-display); font-weight: 800;
   font-size: clamp(40px, 6vw, 58px); letter-spacing: -0.02em;
@@ -337,18 +342,22 @@ main {
   font-size: clamp(30px, 5vw, 44px); margin: 8px 0 26px; letter-spacing: -0.02em;
 }
 .over-stats {
-  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px;
+  width: min(100%, 560px); margin: 0 auto 22px;
 }
 .over-stat {
   background: var(--dono-card); border: 1px solid var(--dono-line);
-  border-radius: var(--radius); padding: 16px 22px; min-width: 128px; box-shadow: var(--shadow);
+  border-radius: 12px; padding: 9px 8px; min-width: 0; box-shadow: var(--shadow);
 }
-.over-stat b { display: block; font-family: var(--font-display); font-size: 34px; font-weight: 800; color: var(--dono-brand); }
-.over-stat span { font-size: 13px; color: var(--dono-ink-soft); }
+.over-stat b { display: block; font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--dono-brand); }
+.over-stat span { font-size: 11px; color: var(--dono-ink-soft); }
 .over-stat.record { background: var(--dono-accent); border-color: var(--dono-accent); }
 .over-stat.record b, .over-stat.record span { color: var(--dono-ink); }
 .ended-line { color: var(--dono-ink-soft); margin: -12px auto 24px; max-width: 56ch; font-size: 14px; }
-.over-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 34px; }
+.over-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; max-width: 560px; margin: 0 auto 20px; }
+.final-actions { flex-direction: column; align-items: center; gap: 14px; width: min(100%, 300px); }
+.final-actions .btn-primary, .final-actions .btn-secondary, .final-actions .btn-cta { width: 100%; padding: 10px 16px; font-size: 14px; }
+.final-actions .result-play-btn { padding: 16px 20px; font-family: var(--font-display); font-size: 20px; }
 .share-status, .daily-limitation {
   color: var(--dono-ink-soft); font-size: 13px; max-width: 58ch; margin: -16px auto 22px;
 }
@@ -369,6 +378,19 @@ main {
 .btn-cta { background: var(--dono-brand); color: #fff; font-family: var(--font-display); font-weight: 700; }
 .btn-cta:hover { background: var(--dono-brand-dark); }
 
+/* ── Game history ──────────────────────────────────────── */
+.game-history { max-width: 620px; margin: 0 auto 22px; text-align: left; }
+.game-history h3 { font-family: var(--font-display); font-size: 19px; margin-bottom: 10px; }
+.history-list { list-style: none; display: grid; gap: 7px; max-height: 330px; overflow-y: auto; padding-right: 4px; }
+.history-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--dono-card); border: 1px solid var(--dono-line); border-radius: 12px; padding: 9px 10px; }
+.history-number { color: var(--dono-ink-soft); font-size: 12px; font-weight: 700; }
+.history-universities { min-width: 0; font-size: 13px; }
+.history-universities span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-universities b { font-family: var(--font-display); }
+.history-answer { font-size: 12px; font-weight: 700; text-align: right; }
+.history-answer.correct { color: var(--dono-correct); }
+.history-answer.wrong { color: var(--dono-wrong); }
+
 /* ── Error state ────────────────────────────────────────── */
 .error-box {
   margin: auto; max-width: 480px; text-align: center;
@@ -386,12 +408,10 @@ main {
   .stats { gap: 12px; }
   .header-note { display: none; }
   .setup-grid { grid-template-columns: 1fr; }
+  .difficulty-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .how-steps { grid-template-columns: 1fr; }
   .setup-option { min-height: 0; }
-  .start-panel { flex-direction: column; align-items: stretch; }
-  .setup-actions { justify-content: stretch; }
-  .setup-actions .btn-primary, .setup-actions .btn-secondary { flex: 1; }
-  .setup-summary { text-align: center; }
+  .start-panel { align-items: center; }
   .guess-row { position: sticky; bottom: 10px; z-index: 2; }
 }
 
@@ -412,12 +432,14 @@ main {
   <div class="how-to-play-panel">
     <button class="dialog-close" id="close-how-to-play" type="button" aria-label="Close how to play">×</button>
     <h2 id="how-to-play-title">How to play</h2>
-    <p>Choose whether the hidden university is ranked higher or lower than the one you can see.</p>
+    <p>Each round compares two universities. One rank is visible; your job is to decide whether the hidden university is closer to #1 or further away.</p>
     <div class="how-steps">
-      <div class="how-step"><span class="how-visual" aria-hidden="true">#12</span><b>Read the rank</b><span>Smaller numbers are higher ranked.</span></div>
-      <div class="how-step"><span class="how-visual" aria-hidden="true">?</span><b>Make your call</b><span>Is the hidden university closer to #1?</span></div>
-      <div class="how-step"><span class="how-visual" aria-hidden="true">↑ ↓</span><b>Keep scoring</b><span>Choose higher or lower and build your streak.</span></div>
+      <div class="how-step"><span class="how-visual" aria-hidden="true">#12</span><b>Read the known rank</b><span>#1 is the highest rank, so smaller numbers are better.</span></div>
+      <div class="how-step"><span class="how-visual" aria-hidden="true">?</span><b>Compare the hidden university</b><span>Think: would its rank be smaller or larger than the visible number?</span></div>
+      <div class="how-step"><span class="how-visual" aria-hidden="true">↑</span><b>Choose Higher</b><span>Use this when you think it is closer to #1.</span></div>
+      <div class="how-step"><span class="how-visual" aria-hidden="true">↓</span><b>Choose Lower</b><span>Use this when you think it is further from #1.</span></div>
     </div>
+    <p><strong>Scoring:</strong> Three Lives and Daily Challenge end after three incorrect answers. Timed gives you 60 seconds to score as many points as you can.</p>
     <button class="btn-primary" id="got-it" type="button">Got it</button>
   </div>
 </dialog>
@@ -460,10 +482,9 @@ main {
     lives: {
       title: 'Three Lives',
       desc: 'Build the highest score you can. Three wrong answers end the run.',
-      badge: 'Recommended',
     },
     timed: {
-      title: '60 Seconds',
+      title: 'Timed',
       desc: 'Race against the clock and score as many points as possible in 60 seconds.',
     },
     daily: {
@@ -472,18 +493,8 @@ main {
     },
   };
 
-  const POOL_COPY = {
-    global: 'Every eligible university',
-    top200: 'Exact ranks 1 to 200',
-    top50: 'Exact ranks 1 to 50',
-    uk: 'United Kingdom institutions',
-    us: 'United States institutions',
-  };
-
-  const DIFFICULTY_COPY = {
-    easy: 'More forgiving comparisons',
-    normal: 'Balanced comparisons',
-    hard: 'Tough close calls',
+  const COUNTRY_CODES = {
+    'Argentina':'AR','Armenia':'AM','Australia':'AU','Austria':'AT','Azerbaijan':'AZ','Bahrain':'BH','Bangladesh':'BD','Belarus':'BY','Belgium':'BE','Bosnia and Herzegovina':'BA','Brazil':'BR','Brunei Darussalam':'BN','Bulgaria':'BG','Canada':'CA','Chile':'CL','China (Mainland)':'CN','Colombia':'CO','Costa Rica':'CR','Croatia':'HR','Cuba':'CU','Cyprus':'CY','Czechia':'CZ','Denmark':'DK','Dominican Republic':'DO','Ecuador':'EC','Egypt':'EG','Estonia':'EE','Ethiopia':'ET','Finland':'FI','France':'FR','Georgia':'GE','Germany':'DE','Ghana':'GH','Greece':'GR','Guatemala':'GT','Honduras':'HN','Hong Kong SAR, China':'HK','Hungary':'HU','Iceland':'IS','India':'IN','Indonesia':'ID','Iran (Islamic Republic of)':'IR','Iraq':'IQ','Ireland':'IE','Israel':'IL','Italy':'IT','Japan':'JP','Jordan':'JO','Kazakhstan':'KZ','Kenya':'KE','Kuwait':'KW','Kyrgyzstan':'KG','Latvia':'LV','Lebanon':'LB','Lithuania':'LT','Luxembourg':'LU','Macao SAR, China':'MO','Malaysia':'MY','Malta':'MT','Mexico':'MX','Morocco':'MA','Netherlands':'NL','New Zealand':'NZ','Nigeria':'NG','Northern Cyprus':'CY','Norway':'NO','Oman':'OM','Pakistan':'PK','Palestine':'PS','Panama':'PA','Paraguay':'PY','Peru':'PE','Philippines':'PH','Poland':'PL','Portugal':'PT','Puerto Rico':'PR','Qatar':'QA','Republic of Korea':'KR','Romania':'RO','Russian Federation':'RU','Saudi Arabia':'SA','Serbia':'RS','Singapore':'SG','Slovakia':'SK','Slovenia':'SI','South Africa':'ZA','Spain':'ES','Sri Lanka':'LK','Sudan':'SD','Sweden':'SE','Switzerland':'CH','Syrian Arab Republic':'SY','Taiwan':'TW','Tanzania':'TZ','Thailand':'TH','Tunisia':'TN','Türkiye':'TR','Uganda':'UG','Ukraine':'UA','United Arab Emirates':'AE','United Kingdom':'GB','United States of America':'US','Uruguay':'UY','Uzbekistan':'UZ','Venezuela (Bolivarian Republic of)':'VE','Viet Nam':'VN'
   };
 
   const wm = document.getElementById('wordmark');
@@ -507,6 +518,11 @@ main {
   const universities = dataset.universities;
   const dailyUniversities = dataset.dailyUniversities || universities;
   let settings = loadSettings();
+  const sharedMode = new URLSearchParams(window.location.search).get('mode');
+  if (Object.values(core.FORMAT).includes(sharedMode)) {
+    settings.format = sharedMode;
+    if (sharedMode === core.FORMAT.DAILY) settings.pool = core.POOL.GLOBAL;
+  }
   let game = null;
   let dailyGame = null;
   let dailyPractice = false;
@@ -598,8 +614,10 @@ main {
     ].filter(Boolean).join(' · ');
   }
 
-  function poolCount(pool) {
-    return core.buildPool(universities, pool).length;
+  function shareUrlFor(config) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('mode', config.format);
+    return url.toString();
   }
 
   function currentBestLabel(config) {
@@ -610,7 +628,7 @@ main {
   function randomiseSettings() {
     const formats = [core.FORMAT.SUDDEN, core.FORMAT.LIVES, core.FORMAT.TIMED];
     if (officialDailyStatus() !== 'completed') formats.push(core.FORMAT.DAILY);
-    const pools = [core.POOL.GLOBAL, core.POOL.TOP200, core.POOL.TOP50, core.POOL.UK, core.POOL.US];
+    const pools = [core.POOL.GLOBAL, core.POOL.TOP500, core.POOL.TOP200, core.POOL.TOP50, core.POOL.UK, core.POOL.US];
     const difficulties = [core.DIFFICULTY.EASY, core.DIFFICULTY.NORMAL, core.DIFFICULTY.HARD];
     settings.format = formats[Math.floor(Math.random() * formats.length)];
     settings.pool = pools[Math.floor(Math.random() * pools.length)];
@@ -674,34 +692,28 @@ main {
     saveSettings();
     const isDaily = settings.format === core.FORMAT.DAILY;
     const showDifficulty = !isDaily && settings.pool === core.POOL.GLOBAL;
-    const effectiveConfig = Object.assign({}, settings);
     const dailyDate = core.formatDailyDate(core.getDailyDateKey());
-    const dailyState = loadTodayDailyState();
     const dailyStatus = officialDailyStatus();
     const dailyAction = dailyStatus === 'completed' ? 'View today’s result' : dailyStatus === 'resume' ? 'Resume Daily Challenge' : 'Start Game';
     app.innerHTML =
       '<div class="screen landing setup-screen">' +
         '<h1><span class="hi">Higher</span> or <span class="lo">Lower</span>?</h1>' +
         '<p class="lede">Guess which university is closer to #1 in the world rankings.</p>' +
-        '<p class="dataset">Pick a format, choose your universities, then start guessing.</p>' +
         '<section class="setup-section" aria-labelledby="format-heading"><h2 id="format-heading">How do you want to play?</h2><div class="setup-grid">' +
+          optionButton('format', 'lives', FORMAT_COPY.lives.title, FORMAT_COPY.lives.desc, settings.format === 'lives') +
           optionButton('format', 'sudden', FORMAT_COPY.sudden.title, FORMAT_COPY.sudden.desc, settings.format === 'sudden') +
-          optionButton('format', 'lives', FORMAT_COPY.lives.title, FORMAT_COPY.lives.desc, settings.format === 'lives', FORMAT_COPY.lives.badge) +
           optionButton('format', 'timed', FORMAT_COPY.timed.title, FORMAT_COPY.timed.desc, settings.format === 'timed') +
           optionButton('format', 'daily', FORMAT_COPY.daily.title, FORMAT_COPY.daily.desc, settings.format === 'daily') +
         '</div></section>' +
-        (isDaily
-          ? '<section class="setup-section daily-note" aria-labelledby="daily-heading"><h2 id="daily-heading">Today’s challenge</h2><p>Daily Challenge · ' + esc(dailyDate) + ' · Global pool · all ' + dailyUniversities.length + ' published universities</p>' +
-            (dailyState ? '<p class="daily-status">' + (dailyState.completed ? 'Official attempt completed. Practice replays are clearly labelled and do not change your score.' : 'Official attempt in progress. You can resume from this device.') + '</p>' : '') + '</section>'
-          : '<section class="setup-section" aria-labelledby="pool-heading"><h2 id="pool-heading">Which universities?</h2><div class="setup-grid">' +
-          ['global','top200','top50','uk','us'].map(pool => optionButton('pool', pool, core.POOL_LABELS[pool], '', settings.pool === pool)).join('') +
-        '</div></section>') +
-        (showDifficulty ? '<section class="setup-section" aria-labelledby="difficulty-heading"><h2 id="difficulty-heading">How difficult?</h2><div class="setup-grid compact">' +
-          ['easy','normal','hard'].map(diff => optionButton('difficulty', diff, core.DIFFICULTY_RULES[diff].label, DIFFICULTY_COPY[diff], settings.difficulty === diff)).join('') +
+        (!isDaily ? '<section class="setup-section" aria-labelledby="pool-heading"><h2 id="pool-heading">Which universities?</h2><div class="setup-grid category-grid">' +
+          ['global','top500','top200','top50','uk','us'].map(pool => optionButton('pool', pool, (pool === 'uk' ? '🇬🇧 ' : pool === 'us' ? '🇺🇸 ' : '') + core.POOL_LABELS[pool], '', settings.pool === pool)).join('') +
         '</div></section>' : '') +
-        '<div class="start-panel"><p class="setup-summary">' + esc(isDaily ? 'Daily Challenge · ' + dailyDate : configSummary(effectiveConfig)) + (isDaily ? '' : currentBestLabel(effectiveConfig)) + '</p>' +
-          '<div class="setup-actions"><button class="btn-secondary" id="randomise-settings">Randomise</button>' +
-          '<button class="btn-primary start-btn" id="start-game">' + esc(isDaily ? dailyAction : 'Start Game') + '</button>' +
+        (showDifficulty ? '<section class="setup-section" aria-labelledby="difficulty-heading"><h2 id="difficulty-heading">How difficult?</h2><div class="setup-grid difficulty-grid">' +
+          ['easy','normal','hard'].map(diff => optionButton('difficulty', diff, core.DIFFICULTY_RULES[diff].label, '', settings.difficulty === diff)).join('') +
+        '</div></section>' : '') +
+        '<div class="start-panel"><div class="setup-actions">' +
+          '<button class="btn-secondary" id="randomise-settings">Randomise</button>' +
+          '<button class="btn-primary start-btn" id="start-game">' + esc(isDaily ? dailyAction : 'Play') + '</button>' +
           (isDaily && dailyStatus === 'completed' ? '<button class="btn-secondary" id="practice-daily">Practise again</button>' : '') + '</div></div>' +
       '</div>';
 
@@ -762,7 +774,7 @@ main {
     clearTimers();
     saveSettings();
     try {
-      game = core.createGame(universities, settings);
+      game = core.createGame(dailyUniversities, settings);
     } catch (error) {
       renderError(error.message);
       return;
@@ -847,11 +859,14 @@ main {
           '</span>' +
         '</div>' +
       '</div>';
-    document.getElementById('next-btn').addEventListener('click', ending ? renderDailyGameOver : onDailyNext);
     bindRestartButton();
-    document.getElementById('next-btn').focus();
     announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + dailyRelationText(result) + ' Points gained ' + result.points + '. ' + (result.lifeLost ? s.livesRemaining + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
-    if (!ending) autoNext(onDailyNext);
+    document.getElementById('next-btn').addEventListener('click', ending ? renderDailyGameOver : onDailyNext);
+    if (ending) autoNext(renderDailyGameOver);
+    else {
+      document.getElementById('next-btn').focus();
+      autoNext(onDailyNext);
+    }
   }
 
   function onDailyNext() {
@@ -877,12 +892,12 @@ main {
     return '<div class="status-bar"><span class="mode-chip">' + esc(label) + '</span><div class="stats">' + stats + '</div><button class="end-run-btn restart-btn" id="restart-game" type="button">Restart</button></div>';
   }
 
-  function autoNext(callback) {
+  function autoNext(callback, delay = revealDelayMs) {
     if (timedAutoNextId) window.clearTimeout(timedAutoNextId);
     timedAutoNextId = window.setTimeout(() => {
       timedAutoNextId = null;
       callback();
-    }, revealDelayMs);
+    }, delay);
   }
 
   function streakStat(streak) {
@@ -907,7 +922,24 @@ main {
   }
 
   function rankText(university) {
-    return university.rankBand || core.ordinal(university.rank);
+    return core.ordinal(university.rank);
+  }
+
+  function historyMarkup(history) {
+    if (!history || !history.length) return '';
+    return '<section class="game-history" aria-labelledby="history-heading"><h3 id="history-heading">Game history</h3><ol class="history-list">' +
+      history.map((entry, index) =>
+        '<li class="history-row"><span class="history-number">' + (index + 1) + '</span>' +
+          '<span class="history-universities"><span><b>' + esc(entry.current.name) + '</b> · ' + rankText(entry.current) + '</span>' +
+          '<span><b>' + esc(entry.challenger.name) + '</b> · ' + rankText(entry.challenger) + '</span></span>' +
+          '<span class="history-answer ' + (entry.wasCorrect ? 'correct' : 'wrong') + '">' +
+            'You chose ' + esc(entry.answer) + '<br>' + (entry.wasCorrect ? '✓ Correct' : '✕ Incorrect') + '</span></li>'
+      ).join('') + '</ol></section>';
+  }
+
+  function countryFlag(country) {
+    const code = COUNTRY_CODES[country];
+    return code ? String.fromCodePoint(...[...code].map(letter => 127397 + letter.charCodeAt(0))) : '🌐';
   }
 
   function restartCurrentGame() {
@@ -932,7 +964,7 @@ main {
       : '<div class="uni-rank hidden-rank" aria-label="ranking hidden">?<span class="of">higher or lower?</span></div>';
     return '<button class="uni-card' + (opts.tappable ? ' tappable' : '') + '" ' + (opts.guess !== undefined ? 'data-guess="' + opts.guess + '"' : 'tabindex="-1" disabled') + '>' +
       '<span class="uni-name">' + esc(university.name) + '</span>' +
-      (university.country ? '<span class="uni-country">' + esc(university.country) + '</span>' : '') + rankHTML +
+      (university.country ? '<span class="uni-country"><span class="uni-flag" aria-hidden="true">' + countryFlag(university.country) + '</span>' + esc(university.country) + '</span>' : '') + rankHTML +
     '</button>';
   }
 
@@ -983,11 +1015,6 @@ main {
     const s = game.state;
     const ending = s.phase === 'over';
     const timed = s.config.format === core.FORMAT.TIMED;
-    if (timed && !ending) {
-      game.next();
-      renderRound();
-      return;
-    }
     const nextLabel = ending ? 'See results' : 'Next round';
     app.innerHTML =
       '<div class="screen game-screen">' + statusBar() +
@@ -1000,16 +1027,23 @@ main {
           '<span class="result-text"><span class="verdict"><span aria-hidden="true">' + (result.wasCorrect ? '✓' : '✕') + '</span> ' + (result.wasCorrect ? 'Correct' : 'Incorrect') + '</span>' +
             '<span class="result-sub">' + esc(relationText(result)) + (result.lifeLost ? ' One life lost.' : '') + '</span></span>' +
           '<span class="result-actions">' + streakAddition(result) + '<span class="points-chip ' + (result.points >= 0 ? 'gain' : 'loss') + '">' + pointsText(result) + '</span>' +
-            '<button class="next-btn" id="next-btn">' + nextLabel + '<span class="sr-only"> (press Enter)</span></button>' +
+            (timed && !ending ? '<span class="auto-next">Next...</span>' : '<button class="next-btn" id="next-btn">' + nextLabel + '<span class="sr-only"> (press Enter)</span></button>') +
           '</span>' +
         '</div>' +
       '</div>';
     announce((result.wasCorrect ? 'Correct. ' : 'Incorrect. ') + relationText(result) + ' Points ' + pointsText(result) + '. ' + (result.lifeLost ? s.lives + ' lives remaining. ' : '') + 'Score ' + s.score + '.');
 
-    document.getElementById('next-btn').addEventListener('click', ending ? renderGameOver : onNext);
-    document.getElementById('next-btn').focus();
     bindRestartButton();
-    if (!ending) autoNext(onNext);
+    if (timed && !ending) {
+      autoNext(onNext, 350);
+    } else if (ending) {
+      document.getElementById('next-btn').addEventListener('click', renderGameOver);
+      autoNext(renderGameOver);
+    } else {
+      document.getElementById('next-btn').addEventListener('click', onNext);
+      document.getElementById('next-btn').focus();
+      autoNext(onNext);
+    }
   }
 
   function onNext() {
@@ -1040,34 +1074,21 @@ main {
 
   function resultStats() {
     const s = game.state;
-    const accuracyText = core.accuracy(s.correct, s.attempts) + '%';
     const stats = [
       ['Final score', s.score],
       ['Longest streak', s.bestStreak],
+      ['Best score', Math.max(readBest(s.config), s.score)],
     ];
-    if (s.config.format !== core.FORMAT.SUDDEN) {
-      stats.push(['Correct', s.correct], ['Incorrect', s.incorrect], ['Accuracy', accuracyText]);
-    }
-    if (s.config.format === core.FORMAT.TIMED) stats.push(['Attempts', s.attempts]);
-    stats.push(['Best score', Math.max(readBest(s.config), s.score)]);
     return stats.map(([label, value]) => '<div class="over-stat"><b>' + value + '</b><span>' + esc(label) + '</span></div>').join('');
   }
 
   function dailyResultStats() {
     const s = dailyGame.state;
-    const attempts = s.answerPattern.length;
-    const reached = s.current ? s.current.name : 'Sequence complete';
     const stats = [
       ['Final score', s.score],
-      ['Correct', s.correct],
-      ['Incorrect', s.incorrect],
-      ['Accuracy', core.accuracy(s.correct, attempts) + '%'],
       ['Longest streak', s.bestStreak],
-      ['Comparisons', attempts],
-      ['Lives used', 3 - s.livesRemaining],
     ];
-    return '<div class="over-stats">' + stats.map(([label, value]) => '<div class="over-stat"><b>' + value + '</b><span>' + esc(label) + '</span></div>').join('') + '</div>' +
-      '<p class="ended-line">University reached: ' + esc(reached) + '</p>';
+    return '<div class="over-stats">' + stats.map(([label, value]) => '<div class="over-stat"><b>' + value + '</b><span>' + esc(label) + '</span></div>').join('') + '</div>';
   }
 
   function renderDailyGameOver() {
@@ -1083,19 +1104,17 @@ main {
         '<p class="over-kicker">Daily Challenge · ' + esc(core.formatDailyDate(s.date)) + ' · ' + esc(officialLabel) + '</p>' +
         '<h2>' + (s.practice ? 'Practice complete.' : 'Today’s result.') + '</h2>' +
         dailyResultStats() +
-        '<div class="over-actions">' +
-          '<button class="btn-primary" id="share-daily">Share result</button>' +
+        historyMarkup(s.history) +
+        '<div class="over-actions final-actions">' +
+          '<button class="btn-primary result-play-btn" id="practice-daily-result">Practise again</button>' +
           '<button class="btn-secondary" id="view-daily">View today’s result</button>' +
-          '<button class="btn-secondary" id="practice-daily-result">Practise again</button>' +
           '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
-          '<button class="btn-cta" id="share-game">' + esc(DONO_CONFIG.ctaButtonLabel) + '</button>' +
+          '<button class="btn-cta" id="share-daily">Share result</button>' +
         '</div>' +
         '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
-        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
         '<p class="daily-limitation">This static Daily Challenge uses local browser storage for casual one-attempt tracking. It is not secure anti-cheat or cross-device enforcement.</p>' +
       '</div>';
     document.getElementById('share-daily').addEventListener('click', shareDailyResult);
-    document.getElementById('share-game').addEventListener('click', shareGame);
     document.getElementById('view-daily').addEventListener('click', () => {
       const saved = loadTodayDailyState();
       if (saved) dailyGame = core.createDailyGame(dailyUniversities, dailyOptions(), saved);
@@ -1123,16 +1142,16 @@ main {
 
   function shareDailyResult() {
     const status = document.getElementById('share-status');
-    const text = core.createDailyShareText(dailyGame.state);
+    const config = { format: core.FORMAT.DAILY, pool: core.POOL.GLOBAL, difficulty: core.DIFFICULTY.NORMAL };
+    const url = shareUrlFor(config);
+    const text = core.createDailyShareText(dailyGame.state) + '\n\nCan you beat my Daily Challenge?\n' + url;
     const done = () => {
       status.textContent = 'Result copied without spoilers.';
       announce('Daily Challenge result copied.');
     };
-    const fail = () => {
-      status.textContent = 'Copy unavailable. Select and copy: ' + text.replace(/\n/g, ' / ');
-    };
+    const fail = () => { status.textContent = ''; };
     if (navigator.share) {
-      navigator.share({ title: 'Dono Daily Challenge', text }).then(done).catch(() => fallbackCopy(text) ? done() : fail());
+      navigator.share({ title: 'Dono Daily Challenge', text, url }).then(done).catch(() => fallbackCopy(text) ? done() : fail());
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text) ? done() : fail());
     } else if (fallbackCopy(text)) {
@@ -1142,19 +1161,26 @@ main {
     }
   }
 
-  function shareGame() {
+  function shareResult() {
     const status = document.getElementById('share-status');
-    const url = window.location.href.split('#')[0];
-    const text = 'Try Dono Higher or Lower — University Rankings: ' + url;
+    const s = game.state;
+    const url = shareUrlFor(s.config);
+    const text = [
+      'Dono Rankings',
+      configSummary(s.config),
+      '',
+      'Score: ' + s.score,
+      'Best streak: ' + s.bestStreak,
+      'Can you beat me at ' + core.FORMAT_LABELS[s.config.format] + '?',
+      url,
+    ].join('\n');
     const done = () => {
-      if (status) status.textContent = 'Game link copied.';
-      announce('Game link copied.');
+      status.textContent = 'Result copied — challenge your friends.';
+      announce('Game result copied.');
     };
-    const fail = () => {
-      if (status) status.textContent = 'Copy unavailable. Share this link: ' + url;
-    };
+    const fail = () => { status.textContent = ''; };
     if (navigator.share) {
-      navigator.share({ title: 'Dono Higher or Lower', text: 'Can you beat my university rankings score?', url }).then(done).catch(() => {});
+      navigator.share({ title: 'Dono Rankings', text, url }).then(done).catch(() => fallbackCopy(text) ? done() : fail());
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text) ? done() : fail());
     } else if (fallbackCopy(text)) {
@@ -1170,23 +1196,22 @@ main {
     busy = false;
     const s = game.state;
     writeBest(s.config, s.score);
-    const ended = s.endedByComparison ? '<p class="ended-line">Ended on: ' + esc(relationText(s.endedByComparison)) + '</p>' : '';
     app.innerHTML =
       '<div class="screen over">' +
         '<p class="over-kicker">' + esc(configSummary(s.config)) + ' · results</p>' +
         '<h2>' + (s.config.format === core.FORMAT.TIMED ? 'Time up.' : 'Final score.') + '</h2>' +
-        '<div class="over-stats">' + resultStats() + '</div>' + ended +
-        '<div class="over-actions">' +
-          '<button class="btn-primary" id="again-btn">Play again</button>' +
+        '<div class="over-stats">' + resultStats() + '</div>' +
+        historyMarkup(s.history) +
+        '<div class="over-actions final-actions">' +
+          '<button class="btn-primary result-play-btn" id="again-btn">Play again</button>' +
           '<button class="btn-secondary" id="settings-btn">Change game settings</button>' +
-          '<button class="btn-cta" id="share-game">' + esc(DONO_CONFIG.ctaButtonLabel) + '</button>' +
+          '<button class="btn-cta" id="share-result">Share result</button>' +
         '</div>' +
         '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
-        '<div class="cta-block"><p>' + esc(DONO_CONFIG.endOfGameCta) + '</p></div>' +
       '</div>';
     document.getElementById('again-btn').addEventListener('click', startGame);
+    document.getElementById('share-result').addEventListener('click', shareResult);
     document.getElementById('settings-btn').addEventListener('click', renderLanding);
-    document.getElementById('share-game').addEventListener('click', shareGame);
     document.getElementById('again-btn').focus();
     announce('Game over. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
   }
@@ -1217,8 +1242,8 @@ main {
     }
   });
 
-  if (dataset.error || universities.length < 3) {
-    renderError(dataset.error || 'The rankings data contains fewer than three universities with exact numerical ranks.');
+  if (dataset.error || dailyUniversities.length < 3) {
+    renderError(dataset.error || 'The rankings data contains fewer than three universities.');
   } else {
     renderLanding();
   }

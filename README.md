@@ -16,11 +16,12 @@ If the CSV cannot be loaded or parsed, the game displays its existing error scre
 
 ## Pools and difficulty
 
-Pools filter the exact-ranked dataset:
+Pools filter the complete university dataset:
 
-- `Global`: all eligible exact-ranked universities.
-- `Top 200`: exact ranks from 1 to 200.
-- `Top 50`: exact ranks from 1 to 50.
+- `Global`: all listed universities.
+- `Top 500`: universities in the top 500.
+- `Top 200`: universities in the top 200.
+- `Top 50`: universities in the top 50.
 - `UK Universities`: country values normalised to United Kingdom.
 - `US Universities`: country values normalised to United States of America.
 
@@ -44,7 +45,7 @@ The most recent format, pool and Global difficulty are also saved locally. If `l
 
 ## Daily Challenge
 
-Daily Challenge is a static, front-end-only shared challenge. It uses all published universities in the CSV (including published rank bands) and generates one deterministic sequence per day. Universities in the same published rank band are never compared with each other.
+Daily Challenge is a static, front-end-only shared challenge. It uses all published universities in the CSV and generates one deterministic sequence per day. When a published rank is a range, the source `Index` is used as that university’s game rank.
 
 Daily Challenge uses the same Three Lives streak scoring as the standard Three Lives mode: +1 for streaks of 1-2, +2 for 3-4, +3 for 5-9, and +5 for 10 or more.
 
@@ -83,4 +84,4 @@ The tests cover rank direction, pool filters, difficulty boundaries, game-ending
 
 ## Dataset limitation
 
-The QS source contains approximately 1,500 institutions, but many lower-ranked entries are published as rank bands. This game plays with all institutions that have exact numerical ranks and reports how many banded entries were excluded from play. The data layer also retains those banded records separately so a future version can support banded comparisons without misrepresenting them as exact ranks.
+The QS source contains approximately 1,500 institutions. For published rank bands, the source `Index` supplies the game ordering value, allowing every listed institution to be included without displaying a range as its game rank.

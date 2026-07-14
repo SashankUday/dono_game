@@ -84,6 +84,7 @@ test('Top 50 and Top 200 pools respect rank caps', () => {
   const universities = makeUniversities(500);
   assert.ok(core.buildPool(universities, 'top50').every(u => u.rank <= 50));
   assert.ok(core.buildPool(universities, 'top200').every(u => u.rank <= 200));
+  assert.ok(core.buildPool(universities, 'top500').every(u => u.rank <= 500));
 });
 
 test('UK and US pools normalise equivalent country values', () => {
@@ -142,6 +143,16 @@ test('Timed mode stops accepting guesses at zero seconds', () => {
   assert.equal(game.guess(true), null);
 });
 
+test('standard games retain a complete answer history', () => {
+  const game = core.createGame(makeUniversities(20), { format: 'lives', pool: 'top50' }, rng([0]));
+  const guessHigher = game.state.challenger.rank < game.state.current.rank;
+  game.guess(guessHigher);
+  assert.equal(game.state.history.length, 1);
+  assert.equal(game.state.history[0].answer, guessHigher ? 'higher' : 'lower');
+  assert.equal(game.state.history[0].wasCorrect, true);
+  assert.equal(game.state.history[0].current.name, game.state.lastResult.current.name);
+});
+
 test('challenger becomes known university next round', () => {
   const game = core.createGame(makeUniversities(20), { format: 'lives', pool: 'top50' }, rng([0]));
   const challenger = game.state.challenger;
@@ -179,12 +190,12 @@ test('invalid and banded ranks are not exact positions', () => {
   assert.equal(result.bandedUniversities.length, 2);
 });
 
-test('Daily Challenge source includes universities with published rank bands', () => {
-  const csv = 'Rank,Name,Country/Territory\n1,A,UK\n1201-1400,B,UK\n1401+,C,UK\n';
+test('rank bands use their source index for gameplay ordering', () => {
+  const csv = 'Index,Rank,Name,Country/Territory\n1,1,A,UK\n1201,1201-1400,B,UK\n1401,1401+,C,UK\n';
   const result = core.loadUniversities(csv);
   assert.equal(result.universities.length, 1);
   assert.equal(result.dailyUniversities.length, 3);
-  assert.equal(result.dailyUniversities[1].rankBand, '1201-1400');
+  assert.equal(result.dailyUniversities[1].rank, 1201);
 });
 
 test('localStorage-style failures can be caught by persistence callers', () => {
@@ -267,6 +278,8 @@ test('refreshing preserves Daily score, lives, streak and position', () => {
   assert.equal(resumed.state.streak, game.state.streak);
   assert.equal(resumed.state.currentIndex, game.state.currentIndex);
   assert.equal(resumed.state.phase, 'revealed');
+  assert.equal(resumed.state.history.length, 1);
+  assert.equal(resumed.state.history[0].wasCorrect, true);
 });
 
 test('completed official Daily attempt cannot be restarted as official state', () => {
