@@ -136,7 +136,7 @@
   function loadUniversities(csvText) {
     const rows = parseCSV(csvText).filter(row => row.some(cell => cell.trim() !== ''));
     if (!rows.length) {
-      return { universities: [], bandedUniversities: [], excludedBanded: 0, error: 'The rankings data is empty.' };
+      return { universities: [], dailyUniversities: [], bandedUniversities: [], excludedBanded: 0, error: 'The rankings data is empty.' };
     }
 
     const headerIndex = findHeaderRow(rows);
@@ -157,6 +157,7 @@
     if (rankCol === -1 || nameCol === -1) {
       return {
         universities: [],
+        dailyUniversities: [],
         bandedUniversities: [],
         excludedBanded: 0,
         error: 'The rankings CSV needs columns for rank and university name.',
@@ -165,6 +166,7 @@
 
     const seen = new Set();
     const universities = [];
+    const dailyUniversities = [];
     const bandedUniversities = [];
     let excludedBanded = 0;
     for (let i = headerIndex + 1; i < rows.length; i++) {
@@ -174,12 +176,19 @@
       if (!name) continue;
       if (!/^\d+$/.test(rankRaw)) {
         if (rankRaw) {
-          excludedBanded++;
-          bandedUniversities.push({
+          const bandStart = parseInt(rankRaw, 10);
+          const bandedUniversity = {
+            id: dailyUniversities.length,
             name,
+            // Daily uses the published lower edge of a rank band. Equal bands are
+            // never compared, so no order is invented within a published band.
+            rank: bandStart,
             rankBand: rankRaw,
             country: normaliseCountry(countryCol !== -1 ? row[countryCol] : ''),
-          });
+          };
+          excludedBanded++;
+          bandedUniversities.push(bandedUniversity);
+          if (Number.isFinite(bandStart)) dailyUniversities.push(bandedUniversity);
         }
         continue;
       }
@@ -187,15 +196,17 @@
       const key = [name.toLowerCase(), rankRaw, country.toLowerCase()].join('|');
       if (seen.has(key)) continue;
       seen.add(key);
-      universities.push({
-        id: universities.length,
+      const university = {
+        id: dailyUniversities.length,
         name,
         rank: parseInt(rankRaw, 10),
         country,
-      });
+      };
+      universities.push(university);
+      dailyUniversities.push(university);
     }
 
-    return { universities, bandedUniversities, excludedBanded, error: null };
+    return { universities, dailyUniversities, bandedUniversities, excludedBanded, error: null };
   }
 
   function ordinal(n) {
