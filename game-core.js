@@ -417,8 +417,6 @@
       `Best streak: ${state.bestStreak}`,
       `Comparisons: ${(state.answerPattern || []).length}`,
       pattern,
-      '',
-      'Can you beat it?',
     ].join('\n');
   }
 

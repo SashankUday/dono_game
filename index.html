@@ -1181,7 +1181,7 @@ main {
     const status = document.getElementById('share-status');
     const config = { format: core.FORMAT.DAILY, pool: core.POOL.GLOBAL, difficulty: core.DIFFICULTY.NORMAL };
     const url = shareUrlFor(config);
-    const text = core.createDailyShareText(dailyGame.state) + '\n\nCan you beat my Daily Challenge?\n' + url;
+    const text = core.createDailyShareText(dailyGame.state) + '\n\nCan you beat it? Try here: ' + url;
     const done = () => {
       status.textContent = 'Result copied without spoilers.';
       announce('Daily Challenge result copied.');
