@@ -179,6 +179,14 @@ test('invalid and banded ranks are not exact positions', () => {
   assert.equal(result.bandedUniversities.length, 2);
 });
 
+test('Daily Challenge source includes universities with published rank bands', () => {
+  const csv = 'Rank,Name,Country/Territory\n1,A,UK\n1201-1400,B,UK\n1401+,C,UK\n';
+  const result = core.loadUniversities(csv);
+  assert.equal(result.universities.length, 1);
+  assert.equal(result.dailyUniversities.length, 3);
+  assert.equal(result.dailyUniversities[1].rankBand, '1201-1400');
+});
+
 test('localStorage-style failures can be caught by persistence callers', () => {
   const failingStorage = {
     getItem() { throw new Error('blocked'); },

@@ -8,11 +8,11 @@ Open `index.html` in a browser, or serve the folder with any static file server.
 
 ## Replace the rankings dataset
 
-The displayed game data is embedded in the `<script type="text/csv" id="dono-rankings">` block in `index.html`. Replace that CSV block with a new annual export when rankings update.
+The displayed game data is loaded from `data/university-rankings-2027.csv` with `fetch()`. Replace that file with a new annual export when rankings update. Serve the project through a static web server rather than opening `index.html` directly, because browsers block local-file fetch requests.
 
 The parser looks for rank, name and country/territory columns by heading, so the column order can change. Exact numerical ranks are included in play. Banded ranks such as `1201-1400` or `1401+` are retained as non-playable banded records rather than converted into invented positions.
 
-The source CSV used for this version is also kept as `qs-rankings-2027.csv` for easier replacement and review.
+If the CSV cannot be loaded or parsed, the game displays its existing error screen instead of starting.
 
 ## Pools and difficulty
 
@@ -44,7 +44,7 @@ The most recent format, pool and Global difficulty are also saved locally. If `l
 
 ## Daily Challenge
 
-Daily Challenge is a static, front-end-only shared challenge. It uses the Global exact-ranked pool and generates one deterministic sequence per day.
+Daily Challenge is a static, front-end-only shared challenge. It uses all published universities in the CSV (including published rank bands) and generates one deterministic sequence per day. Universities in the same published rank band are never compared with each other.
 
 Daily Challenge uses the same Three Lives streak scoring as the standard Three Lives mode: +1 for streaks of 1-2, +2 for 3-4, +3 for 5-9, and +5 for 10 or more.
 
