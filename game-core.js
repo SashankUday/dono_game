@@ -567,13 +567,15 @@
       state.attempts++;
       if (wasCorrect) {
         state.correct++;
-        state.streak++;
-        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        if (config.format !== FORMAT.SUDDEN) {
+          state.streak++;
+          state.bestStreak = Math.max(state.bestStreak, state.streak);
+        }
         points = config.format === FORMAT.LIVES ? pointsForLivesStreak(state.streak) : 1;
         state.score += points;
       } else {
         state.incorrect++;
-        state.streak = 0;
+        if (config.format !== FORMAT.SUDDEN) state.streak = 0;
         if (config.format === FORMAT.LIVES) state.lives = Math.max(0, state.lives - 1);
         if (config.format === FORMAT.TIMED) {
           points = -1;

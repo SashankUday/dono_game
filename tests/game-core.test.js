@@ -100,6 +100,14 @@ test('Sudden Death ends after one incorrect answer', () => {
   assert.equal(game.state.phase, 'over');
 });
 
+test('Sudden Death does not track streaks', () => {
+  const game = core.createGame(makeUniversities(10), { format: 'sudden', pool: 'top50' }, rng([0]));
+  const correctGuess = game.state.challenger.rank < game.state.current.rank;
+  game.guess(correctGuess);
+  assert.equal(game.state.streak, 0);
+  assert.equal(game.state.bestStreak, 0);
+});
+
 test('Three Lives ends after the third incorrect answer', () => {
   const game = core.createGame(makeUniversities(20), { format: 'lives', pool: 'top50' }, rng([0]));
   for (let i = 0; i < 3; i++) {
