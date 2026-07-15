@@ -1,4 +1,5 @@
 .daily-leaderboard { margin-top: 28px; text-align: left; }
+.leaderboard-dialog { border: 0; padding: 0; background: transparent; width: min(680px, calc(100% - 32px)); max-height: calc(100vh - 32px); margin: auto; }.leaderboard-dialog::backdrop { background: rgba(23, 33, 27, .48); }.leaderboard-dialog-panel { position: relative; padding: clamp(20px, 4vw, 30px); border-radius: var(--radius); background: var(--dono-paper); box-shadow: var(--shadow); overflow: auto; max-height: calc(100vh - 32px); }.leaderboard-dialog-panel .daily-leaderboard { margin: 0; }
 .leaderboard-card { background: var(--dono-card); border: 1px solid var(--dono-line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 .leaderboard-heading { padding: 20px 20px 12px; display: flex; justify-content: space-between; gap: 12px; }
 .leaderboard-heading h3 { font-family: var(--font-display); font-size: 21px; }

@@ -31,7 +31,7 @@
   }
   function el(tag, className, text) { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
   function shell(container) {
-    container.replaceChildren(); const card = el('section', 'leaderboard-card'); const heading = el('div', 'leaderboard-heading'); const title = el('div'); title.append(el('h3', '', 'Daily leaderboard'), el('p', '', 'Today’s official scores')); heading.append(title);
+    container.replaceChildren(); const card = el('section', 'leaderboard-card'); const heading = el('div', 'leaderboard-heading'); const title = el('div'); title.append(el('h3', '', 'Daily Leaderboard'), el('p', '', 'Today’s official scores')); heading.append(title);
     const body = el('div', 'leaderboard-body'); const content = el('div'); const status = el('p', 'leaderboard-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); body.append(content, status); card.append(heading, body); container.append(card); return { content, status };
   }
   function status(ui, text, kind) { ui.status.textContent = text || ''; ui.status.className = 'leaderboard-status' + (kind ? ' ' + kind : ''); }
@@ -81,8 +81,8 @@
   async function show(options) {
     if (!root || !options || !options.container || options.practice) return; const ui = shell(options.container); const supabase = getClient(); if (!supabase) { ui.content.append(el('p', 'leaderboard-unavailable', 'Leaderboard unavailable. Your Daily result is saved on this device.')); return; }
     status(ui, 'Loading leaderboard…'); const auth = await getUser(); if (auth.error || !auth.user) { ui.content.append(el('p', 'leaderboard-unavailable', 'Leaderboard unavailable. Your Daily result is saved on this device.')); status(ui, ''); return; }
-    const context = { supabase, date: options.challengeDate, score: options.score, bestStreak: options.bestStreak, reload: null }; context.reload = async () => { const data = await load(supabase, context.date, auth.user.id); if (data.error) { status(ui, 'Leaderboard could not be refreshed.', 'error'); return; } renderRows(ui, data.rows, data.own, data.rank); actions(context, auth.user, ui); };
-    await context.reload(); await submit(context, auth.user, ui);
+    const context = { supabase, date: options.challengeDate, score: options.score, bestStreak: options.bestStreak, readOnly: !!options.readOnly, reload: null }; context.reload = async () => { const data = await load(supabase, context.date, auth.user.id); if (data.error) { status(ui, 'Leaderboard could not be refreshed.', 'error'); return; } renderRows(ui, data.rows, data.own, data.rank); if (ui.status.textContent === 'Loading leaderboard…') status(ui, ''); if (!context.readOnly) actions(context, auth.user, ui); };
+    await context.reload(); if (!context.readOnly) await submit(context, auth.user, ui);
   }
   return { show, validateDisplayName, submissionKey, isUniqueConstraint, compareScores, validConfig };
 });

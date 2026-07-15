@@ -99,6 +99,7 @@ a { color: var(--dono-brand); }
   background: var(--dono-card); color: var(--dono-ink); font-weight: 700; font-size: 14px;
 }
 .how-to-play-btn:hover { border-color: var(--dono-brand); color: var(--dono-brand); }
+.header-actions { display: flex; align-items: center; gap: 8px; }
 .header-note {
   font-size: 13px; color: var(--dono-ink-soft);
 }
@@ -197,7 +198,7 @@ main {
 .how-visual { display: block; font-size: 32px; margin-bottom: 6px; }
 .how-step b { display: block; font-family: var(--font-display); }
 .how-step span { display: block; font-size: 12px; color: var(--dono-ink-soft); margin-top: 4px; }
-.dialog-close { position: absolute; top: 12px; right: 12px; border: 0; background: transparent; font-size: 26px; color: var(--dono-ink-soft); width: 40px; height: 40px; }
+.dialog-close { position: absolute; top: 12px; right: 12px; border: 0; background: transparent; font-size: 26px; color: var(--dono-ink-soft); width: 40px; height: 40px; display: grid; place-items: center; line-height: 1; }
 .dialog-close:hover { color: var(--dono-ink); }
 .how-to-play-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
 
@@ -428,7 +429,10 @@ main {
 
 <header class="site-header">
   <a class="wordmark" id="wordmark" href="./">Dono <span class="games">Games</span></a>
-  <button class="how-to-play-btn" id="how-to-play" type="button">How to play</button>
+  <div class="header-actions">
+    <button class="how-to-play-btn" id="daily-leaderboard-menu" type="button">Daily Leaderboard</button>
+    <button class="how-to-play-btn" id="how-to-play" type="button">How to play</button>
+  </div>
 </header>
 
 <dialog class="how-to-play-dialog" id="how-to-play-dialog" aria-labelledby="how-to-play-title">
@@ -444,6 +448,14 @@ main {
     </div>
     <p><strong>Scoring:</strong> Three Lives and Daily Challenge end after three incorrect answers. Timed gives you 60 seconds to score as many points as you can.</p>
     <div class="how-to-play-actions"><button class="btn-primary" id="got-it" type="button">Got it</button></div>
+  </div>
+</dialog>
+
+<dialog class="leaderboard-dialog" id="daily-leaderboard-dialog" aria-labelledby="daily-leaderboard-dialog-title">
+  <div class="leaderboard-dialog-panel">
+    <button class="dialog-close" id="close-daily-leaderboard" type="button" aria-label="Close daily leaderboard">×</button>
+    <h2 class="sr-only" id="daily-leaderboard-dialog-title">Daily Leaderboard</h2>
+    <div class="daily-leaderboard" id="daily-leaderboard-dialog-content"></div>
   </div>
 </dialog>
 
@@ -544,6 +556,18 @@ main {
   document.getElementById('how-to-play').addEventListener('click', () => howToPlayDialog.showModal());
   document.getElementById('close-how-to-play').addEventListener('click', closeHowToPlay);
   document.getElementById('got-it').addEventListener('click', closeHowToPlay);
+  const dailyLeaderboardDialog = document.getElementById('daily-leaderboard-dialog');
+  document.getElementById('close-daily-leaderboard').addEventListener('click', () => dailyLeaderboardDialog.close());
+  document.getElementById('daily-leaderboard-menu').addEventListener('click', () => {
+    dailyLeaderboardDialog.showModal();
+    if (window.DonoDailyLeaderboard) {
+      window.DonoDailyLeaderboard.show({
+        container: document.getElementById('daily-leaderboard-dialog-content'),
+        challengeDate: core.getDailyDateKey(),
+        readOnly: true,
+      });
+    }
+  });
 
   function esc(value) {
     return String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
