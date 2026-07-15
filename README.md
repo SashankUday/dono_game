@@ -25,7 +25,11 @@ Then visit <http://localhost:8000>.
 
 Do not open `index.html` directly from the file system. The app loads its CSV with `fetch`, which browsers commonly block for `file://` pages.
 
-No package installation or build step is required. Any static host that serves the three application files and `data/` will work.
+No package installation or build step is required. Any static host that serves the application files and `data/` will work.
+
+## Optional Daily leaderboard
+
+The Daily Challenge leaderboard is optional and does not affect local gameplay. To enable it, edit `supabase-config.js` with your Supabase project URL and browser-safe publishable key. Do not use a database password, secret key, or service-role key in the browser. If configuration, authentication, or the network is unavailable, Daily completion remains saved locally and only the leaderboard component reports the issue.
 
 ## How to play
 

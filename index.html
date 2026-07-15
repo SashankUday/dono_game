@@ -26,6 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="daily-leaderboard.css">
 
 <style>
 /* ═══════════ DONO PALETTE & TYPE — edit these variables ═══════════ */
@@ -454,6 +455,9 @@ main {
 </footer>
 
 <script src="game-core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
+<script src="daily-leaderboard.js"></script>
 
 <script>
 
@@ -1149,6 +1153,7 @@ main {
           '<button class="btn-cta" id="share-daily">Share result</button>' +
         '</div>' +
         '<p class="share-status" id="share-status" role="status" aria-live="polite"></p>' +
+        (!s.practice ? '<div class="daily-leaderboard" id="daily-leaderboard" aria-live="polite"></div>' : '') +
         '<p class="daily-limitation">This static Daily Challenge uses local browser storage for casual one-attempt tracking. It is not secure anti-cheat or cross-device enforcement.</p>' +
       '</div>';
     document.getElementById('share-daily').addEventListener('click', shareDailyResult);
@@ -1159,6 +1164,14 @@ main {
     });
     document.getElementById('practice-daily-result').addEventListener('click', () => startDailyPractice());
     document.getElementById('settings-btn').addEventListener('click', renderLanding);
+    if (!s.practice && window.DonoDailyLeaderboard) {
+      window.DonoDailyLeaderboard.show({
+        container: document.getElementById('daily-leaderboard'),
+        challengeDate: s.date,
+        score: s.score,
+        bestStreak: s.bestStreak,
+      });
+    }
     document.getElementById('share-daily').focus();
     announce('Daily Challenge complete. Final score ' + s.score + '. Longest streak ' + s.bestStreak + '.');
   }

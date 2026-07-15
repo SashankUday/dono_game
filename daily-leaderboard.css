@@ -1,0 +1,16 @@
+.daily-leaderboard { margin-top: 28px; text-align: left; }
+.leaderboard-card { background: var(--dono-card); border: 1px solid var(--dono-line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.leaderboard-heading { padding: 20px 20px 12px; display: flex; justify-content: space-between; gap: 12px; }
+.leaderboard-heading h3 { font-family: var(--font-display); font-size: 21px; }
+.leaderboard-heading p, .leaderboard-message { color: var(--dono-ink-soft); font-size: 14px; }
+.leaderboard-body { padding: 0 20px 20px; }
+.leaderboard-status { min-height: 22px; margin: 12px 0 0; font-size: 14px; color: var(--dono-ink-soft); }
+.leaderboard-status.success { color: var(--dono-brand-dark); }.leaderboard-status.error { color: var(--dono-wrong); }
+.leaderboard-list { list-style: none; border-top: 1px solid var(--dono-line); }
+.leaderboard-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--dono-line); font-size: 14px; }
+.leaderboard-row.current-player { margin: 0 -8px; padding-left: 12px; padding-right: 12px; background: var(--dono-brand-soft); border-radius: 10px; border-bottom-color: transparent; }
+.leaderboard-rank { color: var(--dono-ink-soft); font-weight: 700; }.leaderboard-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }.leaderboard-value { text-align: right; color: var(--dono-ink-soft); white-space: nowrap; }
+.leaderboard-own-position { margin-top: 14px; padding: 12px; background: var(--dono-brand-soft); border-radius: 10px; font-size: 14px; }.leaderboard-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }.leaderboard-actions button { padding: 8px 12px; font-size: 13px; }.leaderboard-empty, .leaderboard-unavailable { padding: 16px 0 4px; color: var(--dono-ink-soft); }
+.leaderboard-name-dialog { border: 0; padding: 0; background: transparent; width: min(440px, calc(100% - 32px)); margin: auto; }.leaderboard-name-dialog::backdrop { background: rgba(23, 33, 27, .48); }.leaderboard-name-panel { position: relative; padding: 28px; border-radius: var(--radius); background: var(--dono-card); box-shadow: var(--shadow); }.leaderboard-name-panel h2 { font-family: var(--font-display); font-size: 26px; margin-right: 30px; }.leaderboard-name-panel p { margin-top: 8px; color: var(--dono-ink-soft); }.leaderboard-name-panel label { display: block; margin-top: 20px; font-weight: 700; }.leaderboard-name-panel input { width: 100%; margin-top: 7px; padding: 11px 12px; border: 1px solid var(--dono-line); border-radius: 10px; color: var(--dono-ink); font: inherit; }.leaderboard-name-error { min-height: 22px; margin-top: 7px; color: var(--dono-wrong); font-size: 14px; }.leaderboard-name-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+@media (max-width: 480px) { .leaderboard-heading, .leaderboard-body { padding-left: 14px; padding-right: 14px; }.leaderboard-row { grid-template-columns: 28px minmax(0, 1fr) auto; gap: 7px; }.leaderboard-row .leaderboard-streak { grid-column: 2 / -1; text-align: left; margin-top: -7px; font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .leaderboard-name-dialog, .leaderboard-name-dialog::backdrop { transition: none; } }
